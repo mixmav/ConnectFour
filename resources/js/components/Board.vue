@@ -1,15 +1,20 @@
 <template>
 	<div id="board" class="no-select" :class="'current-player-' + currentPlayer">
 		<div class="board-col"
-			v-for="(i, index) in boardSlots"
-			:class="[{'col-full': colIsFull(index)}]"
-			@click="checkSlot(index)"
-			@mouseover="addHoverClass(index)"
-			@mouseout="removeHoverClass(index)">
+			v-for="(i, col) in boardSlots"
+			:class="[{'col-full': colIsFull(col)}]"
+			@click="checkSlot(col)"
+			@mouseover="addHoverClass(col)"
+			@mouseleave="removeHoverClass(col)">
 				<div class="board-slot"
-	 				v-for="boardSlot in i"
-					:class="['ownedBy-player-' + boardSlot.owner, {'hover': (boardSlot.hover && boardSlot.owner == 0)}]">
-				</div>
+	 				v-for="(boardSlot, row) in i"
+					:class="['ownedBy-player-' + boardSlot.owner,
+								{
+									'hover': (boardSlot.hover && boardSlot.owner == 0),
+									'glow': shouldGlow(row, col)
+								}
+							]"
+				></div>
 		</div>
 	</div>
 </template>
@@ -103,6 +108,7 @@ export default{
 		]),
 		...mapState('Board', [
 			'boardSlots',
+			'moves',
 		]),
 	},
 
@@ -118,6 +124,21 @@ export default{
 			'pushToMovesArray',
 			'setUndoneMovesArray',
 		]),
+
+		shouldGlow(row, col){
+			if (this.moves.length > 0) {
+				if( (this.moves[this.moves.length - 1].row == row) && (this.moves[this.moves.length - 1].col == col)){
+					console.log("yes");
+					return true;
+				} else {
+					console.log("no");
+					return false;
+				}
+			} else {
+				console.log("no");
+				return false;
+			}
+		},
 
 		colIsFull(col){
 			var isFull = true;
@@ -139,6 +160,14 @@ export default{
 						property: 'owner',
 						value: this.currentPlayer
 					});
+
+					this.updateSpecificSlotProperty({
+						col: col,
+						row: i,
+						property: 'hover',
+						value: false
+					});
+
 					this.howl.play();
 					this.checkForWin();
 					this.swapToNextPlayer();
@@ -262,33 +291,41 @@ export default{
 			&.ownedBy-player-1{
 				border-color: darken($player-1-color, 10%);
 				background: $player-1-color;
-				animation: scaleBounce .7s linear;
+				animation: scaleBounce .75s linear;
+
+				&.glow{
+					animation: scaleBounce .75s linear, glow .7s infinite alternate;
+				}
 			}
 
 			&.ownedBy-player-2{
 				border-color: darken($player-2-color, 20%);
 				background: $player-2-color;
-				animation: scaleBounce .7s linear;
+				animation: scaleBounce .75s linear;
+				
+				&.glow{
+					animation: scaleBounce .75s linear, glow .7s infinite alternate;
+				}
 			}
 		}
 	}
-	// &.current-player-1{
-	// 	.board-col{
-	// 		.board-slot.hover{
-	// 			border-color: darken($player-1-color, 10%);
-	// 			background: $player-1-color;
-	// 		}
-	// 	}
-	// }
+	&.current-player-1{
+		.board-col{
+			.board-slot.hover{
+				border-color: darken($player-1-color, 10%);
+				background: $player-1-color;
+			}
+		}
+	}
 
-	// &.current-player-2{
-	// 	.board-col{
-	// 		.board-slot.hover{
-	// 			border-color: darken($player-2-color, 10%);
-	// 			background: $player-2-color;
-	// 		}
-	// 	}
-	// }	
+	&.current-player-2{
+		.board-col{
+			.board-slot.hover{
+				border-color: darken($player-2-color, 10%);
+				background: $player-2-color;
+			}
+		}
+	}	
 }
 
 @include media(465px){
@@ -332,4 +369,15 @@ export default{
 		}
 	}
 }
+
+@keyframes glow {
+	from {
+		box-shadow: 0 0 10px -10px white;
+	}
+	
+	to {
+		box-shadow: 0 0 10px 10px white;
+	}
+}
+
 </style>

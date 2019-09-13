@@ -15,11 +15,11 @@ $purple: #9124A4;
 
 $body-background: white;
 
-$board-background: rgba(black, 0.8);
+$board-background: #F2DC5D;
 $board-border-color: darken($board-background, 10%);
 
-$player-1-color: #00BCD4;
-$player-2-color: #FFEB3B;
+$player-1-color: #222128;
+$player-2-color: #8375DD;
 
 @mixin media($width){
 	@media only screen and (max-width: $width){

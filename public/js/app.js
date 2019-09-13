@@ -163,6 +163,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
 
 
 
@@ -240,8 +245,22 @@ var channel = window.Echo.channel('board-channel');
       howl: {}
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])(['currentPlayer', 'multiplayer']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('Board', ['boardSlots'])),
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])(['currentPlayer', 'multiplayer']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('Board', ['boardSlots', 'moves'])),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])(['swapToNextPlayer']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('Board', ['setBoardSlotsArray', 'pushObjectToBoardSlotsArray', 'updateSpecificSlotProperty', 'pushToMovesArray', 'setUndoneMovesArray']), {
+    shouldGlow: function shouldGlow(row, col) {
+      if (this.moves.length > 0) {
+        if (this.moves[this.moves.length - 1].row == row && this.moves[this.moves.length - 1].col == col) {
+          console.log("yes");
+          return true;
+        } else {
+          console.log("no");
+          return false;
+        }
+      } else {
+        console.log("no");
+        return false;
+      }
+    },
     colIsFull: function colIsFull(col) {
       var isFull = true;
 
@@ -262,6 +281,12 @@ var channel = window.Echo.channel('board-channel');
             row: i,
             property: 'owner',
             value: this.currentPlayer
+          });
+          this.updateSpecificSlotProperty({
+            col: col,
+            row: i,
+            property: 'hover',
+            value: false
           });
           this.howl.play();
           this.checkForWin();
@@ -2415,7 +2440,7 @@ exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader
 
 
 // module
-exports.push([module.i, "@-webkit-keyframes scaleBounce {\n0% {\n    transform: scale(1, 1);\n}\n50% {\n    transform: scale(1.6);\n}\n60% {\n    transform: scale(0.6);\n}\n80% {\n    transform: scale(0.95);\n}\n100% {\n    transform: scale(1, 1);\n}\n}\n@keyframes scaleBounce {\n0% {\n    transform: scale(1, 1);\n}\n50% {\n    transform: scale(1.6);\n}\n60% {\n    transform: scale(0.6);\n}\n80% {\n    transform: scale(0.95);\n}\n100% {\n    transform: scale(1, 1);\n}\n}\n#app-container {\n  padding: 20px;\n}\n.turn-indicator {\n  text-align: center;\n  margin-top: 20px;\n}\n.turn-indicator div.checker {\n  width: 30px;\n  height: 30px;\n  display: inline-block;\n  margin-top: 10px;\n  border-radius: 100%;\n  border: solid 2px white;\n}\n.turn-indicator div.checker.player-1 {\n  background: #00BCD4;\n  border-color: #008fa1;\n}\n.turn-indicator div.checker.player-2 {\n  background: #FFEB3B;\n  border-color: #ffe608;\n}", ""]);
+exports.push([module.i, "@-webkit-keyframes scaleBounce {\n0% {\n    transform: scale(1, 1);\n}\n50% {\n    transform: scale(1.6);\n}\n60% {\n    transform: scale(0.6);\n}\n80% {\n    transform: scale(0.95);\n}\n100% {\n    transform: scale(1, 1);\n}\n}\n@keyframes scaleBounce {\n0% {\n    transform: scale(1, 1);\n}\n50% {\n    transform: scale(1.6);\n}\n60% {\n    transform: scale(0.6);\n}\n80% {\n    transform: scale(0.95);\n}\n100% {\n    transform: scale(1, 1);\n}\n}\n#app-container {\n  padding: 20px;\n}\n.turn-indicator {\n  text-align: center;\n  margin-top: 20px;\n}\n.turn-indicator div.checker {\n  width: 30px;\n  height: 30px;\n  display: inline-block;\n  margin-top: 10px;\n  border-radius: 100%;\n  border: solid 2px white;\n}\n.turn-indicator div.checker.player-1 {\n  background: #222128;\n  border-color: #0a0a0c;\n}\n.turn-indicator div.checker.player-2 {\n  background: #8375DD;\n  border-color: #5e4cd3;\n}", ""]);
 
 // exports
 
@@ -2434,7 +2459,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "@-webkit-keyframes scaleBounce {\n0% {\n    transform: scale(1, 1);\n}\n50% {\n    transform: scale(1.6);\n}\n60% {\n    transform: scale(0.6);\n}\n80% {\n    transform: scale(0.95);\n}\n100% {\n    transform: scale(1, 1);\n}\n}\n@keyframes scaleBounce {\n0% {\n    transform: scale(1, 1);\n}\n50% {\n    transform: scale(1.6);\n}\n60% {\n    transform: scale(0.6);\n}\n80% {\n    transform: scale(0.95);\n}\n100% {\n    transform: scale(1, 1);\n}\n}\n#board {\n  margin-top: 40px;\n  text-align: center;\n}\n#board .board-col {\n  padding: 15px;\n  display: inline-block;\n  border-top: solid 2px rgba(0, 0, 0, 0.8);\n  border-bottom: solid 2px rgba(0, 0, 0, 0.8);\n  background: rgba(0, 0, 0, 0.8);\n  transition: all 0.2s;\n  cursor: pointer;\n}\n#board .board-col:hover {\n  background: rgba(26, 26, 26, 0.8);\n}\n#board .board-col:first-child {\n  border-left: solid 2px rgba(0, 0, 0, 0.8);\n  border-top-left-radius: 10px;\n  border-bottom-left-radius: 10px;\n}\n#board .board-col:last-child {\n  border-right: solid 2px rgba(0, 0, 0, 0.8);\n  border-top-right-radius: 10px;\n  border-bottom-right-radius: 10px;\n}\n#board .board-col.col-full {\n  cursor: default;\n}\n#board .board-col .board-slot {\n  width: 30px;\n  height: 30px;\n  margin-top: 20px;\n  border-radius: 100%;\n  border: solid 2px white;\n  background: white;\n  transition: all 0.2s;\n}\n#board .board-col .board-slot:first-child {\n  margin-top: 0;\n}\n#board .board-col .board-slot.ownedBy-player-1 {\n  border-color: #008fa1;\n  background: #00BCD4;\n  -webkit-animation: scaleBounce 0.7s linear;\n          animation: scaleBounce 0.7s linear;\n}\n#board .board-col .board-slot.ownedBy-player-2 {\n  border-color: #d4be00;\n  background: #FFEB3B;\n  -webkit-animation: scaleBounce 0.7s linear;\n          animation: scaleBounce 0.7s linear;\n}\n@media only screen and (max-width: 465px) {\n#board .board-col {\n    padding-left: 10px;\n    padding-right: 10px;\n}\n#board .board-col:first-child {\n    padding-left: 15px;\n}\n#board .board-col:last-child {\n    padding-right: 15px;\n}\n#board .board-col .board-slot {\n    width: 25px;\n    height: 25px;\n}\n}\n@media only screen and (max-width: 370px) {\n#board .board-col {\n    padding-left: 8px;\n    padding-right: 8px;\n}\n#board .board-col:first-child {\n    padding-left: 12px;\n}\n#board .board-col:last-child {\n    padding-right: 12px;\n}\n#board .board-col .board-slot {\n    width: 20px;\n    height: 20px;\n}\n}", ""]);
+exports.push([module.i, "@-webkit-keyframes scaleBounce {\n0% {\n    transform: scale(1, 1);\n}\n50% {\n    transform: scale(1.6);\n}\n60% {\n    transform: scale(0.6);\n}\n80% {\n    transform: scale(0.95);\n}\n100% {\n    transform: scale(1, 1);\n}\n}\n@keyframes scaleBounce {\n0% {\n    transform: scale(1, 1);\n}\n50% {\n    transform: scale(1.6);\n}\n60% {\n    transform: scale(0.6);\n}\n80% {\n    transform: scale(0.95);\n}\n100% {\n    transform: scale(1, 1);\n}\n}\n#board {\n  margin-top: 40px;\n  text-align: center;\n}\n#board .board-col {\n  padding: 15px;\n  display: inline-block;\n  border-top: solid 2px #eed22e;\n  border-bottom: solid 2px #eed22e;\n  background: #F2DC5D;\n  transition: all 0.2s;\n  cursor: pointer;\n}\n#board .board-col:hover {\n  background: #f6e68c;\n}\n#board .board-col:first-child {\n  border-left: solid 2px #eed22e;\n  border-top-left-radius: 10px;\n  border-bottom-left-radius: 10px;\n}\n#board .board-col:last-child {\n  border-right: solid 2px #eed22e;\n  border-top-right-radius: 10px;\n  border-bottom-right-radius: 10px;\n}\n#board .board-col.col-full {\n  cursor: default;\n}\n#board .board-col .board-slot {\n  width: 30px;\n  height: 30px;\n  margin-top: 20px;\n  border-radius: 100%;\n  border: solid 2px white;\n  background: white;\n  transition: all 0.2s;\n}\n#board .board-col .board-slot:first-child {\n  margin-top: 0;\n}\n#board .board-col .board-slot.ownedBy-player-1 {\n  border-color: #0a0a0c;\n  background: #222128;\n  -webkit-animation: scaleBounce 0.75s linear;\n          animation: scaleBounce 0.75s linear;\n}\n#board .board-col .board-slot.ownedBy-player-1.glow {\n  -webkit-animation: scaleBounce 0.75s linear, glow 0.7s infinite alternate;\n          animation: scaleBounce 0.75s linear, glow 0.7s infinite alternate;\n}\n#board .board-col .board-slot.ownedBy-player-2 {\n  border-color: #422fbd;\n  background: #8375DD;\n  -webkit-animation: scaleBounce 0.75s linear;\n          animation: scaleBounce 0.75s linear;\n}\n#board .board-col .board-slot.ownedBy-player-2.glow {\n  -webkit-animation: scaleBounce 0.75s linear, glow 0.7s infinite alternate;\n          animation: scaleBounce 0.75s linear, glow 0.7s infinite alternate;\n}\n#board.current-player-1 .board-col .board-slot.hover {\n  border-color: #0a0a0c;\n  background: #222128;\n}\n#board.current-player-2 .board-col .board-slot.hover {\n  border-color: #5e4cd3;\n  background: #8375DD;\n}\n@media only screen and (max-width: 465px) {\n#board .board-col {\n    padding-left: 10px;\n    padding-right: 10px;\n}\n#board .board-col:first-child {\n    padding-left: 15px;\n}\n#board .board-col:last-child {\n    padding-right: 15px;\n}\n#board .board-col .board-slot {\n    width: 25px;\n    height: 25px;\n}\n}\n@media only screen and (max-width: 370px) {\n#board .board-col {\n    padding-left: 8px;\n    padding-right: 8px;\n}\n#board .board-col:first-child {\n    padding-left: 12px;\n}\n#board .board-col:last-child {\n    padding-right: 12px;\n}\n#board .board-col .board-slot {\n    width: 20px;\n    height: 20px;\n}\n}\n@-webkit-keyframes glow {\nfrom {\n    box-shadow: 0 0 10px -10px white;\n}\nto {\n    box-shadow: 0 0 10px 10px white;\n}\n}\n@keyframes glow {\nfrom {\n    box-shadow: 0 0 10px -10px white;\n}\nto {\n    box-shadow: 0 0 10px 10px white;\n}\n}", ""]);
 
 // exports
 
@@ -25764,30 +25789,33 @@ var render = function() {
       class: "current-player-" + _vm.currentPlayer,
       attrs: { id: "board" }
     },
-    _vm._l(_vm.boardSlots, function(i, index) {
+    _vm._l(_vm.boardSlots, function(i, col) {
       return _c(
         "div",
         {
           staticClass: "board-col",
-          class: [{ "col-full": _vm.colIsFull(index) }],
+          class: [{ "col-full": _vm.colIsFull(col) }],
           on: {
             click: function($event) {
-              return _vm.checkSlot(index)
+              return _vm.checkSlot(col)
             },
             mouseover: function($event) {
-              return _vm.addHoverClass(index)
+              return _vm.addHoverClass(col)
             },
-            mouseout: function($event) {
-              return _vm.removeHoverClass(index)
+            mouseleave: function($event) {
+              return _vm.removeHoverClass(col)
             }
           }
         },
-        _vm._l(i, function(boardSlot) {
+        _vm._l(i, function(boardSlot, row) {
           return _c("div", {
             staticClass: "board-slot",
             class: [
               "ownedBy-player-" + boardSlot.owner,
-              { hover: boardSlot.hover && boardSlot.owner == 0 }
+              {
+                hover: boardSlot.hover && boardSlot.owner == 0,
+                glow: _vm.shouldGlow(row, col)
+              }
             ]
           })
         }),
