@@ -128,14 +128,11 @@ export default{
 		shouldGlow(row, col){
 			if (this.moves.length > 0) {
 				if( (this.moves[this.moves.length - 1].row == row) && (this.moves[this.moves.length - 1].col == col)){
-					console.log("yes");
 					return true;
 				} else {
-					console.log("no");
 					return false;
 				}
 			} else {
-				console.log("no");
 				return false;
 			}
 		},

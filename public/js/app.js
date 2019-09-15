@@ -250,14 +250,11 @@ var channel = window.Echo.channel('board-channel');
     shouldGlow: function shouldGlow(row, col) {
       if (this.moves.length > 0) {
         if (this.moves[this.moves.length - 1].row == row && this.moves[this.moves.length - 1].col == col) {
-          console.log("yes");
           return true;
         } else {
-          console.log("no");
           return false;
         }
       } else {
-        console.log("no");
         return false;
       }
     },
@@ -39572,8 +39569,8 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\xampp\htdocs\ConnectFour\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\xampp\htdocs\ConnectFour\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! D:\xampp\htdocs\ConnectFour\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! D:\xampp\htdocs\ConnectFour\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
