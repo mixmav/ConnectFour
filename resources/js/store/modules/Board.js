@@ -4,6 +4,8 @@ export const Board = {
 	namespaced: true,
 	
 	state: {
+		numOfRows: 6,
+		numOfCols: 7,
 		boardSlots: [],
 		moves: [],
 		undoneMoves: [],

@@ -11,10 +11,14 @@
 					:class="['ownedBy-player-' + boardSlot.owner,
 								{
 									'hover': (boardSlot.hover && boardSlot.owner == 0),
+									'winner': boardSlot.winner,
 									'glow': shouldGlow(row, col)
 								}
 							]"
-				></div>
+				>
+					<i class="fa fa-biohazard" v-if="boardSlot.owner == 1"></i>
+					<i class="fa fa-anchor" v-if="boardSlot.owner == 2"></i>
+				</div>
 		</div>
 	</div>
 </template>
@@ -42,7 +46,7 @@ export default{
 	},
 
 	created(){
-		for(var i = 0; i < 7; i++){
+		for(var i = 0; i < this.numOfCols; i++){
 			this.setBoardSlotsArray({
 				index: i,
 				value: [],
@@ -52,12 +56,13 @@ export default{
 		var row = 0;
 		var col = 0;
 
-		for(var i = 1; i <= 42; i++){
+		for(var i = 1; i <= (this.numOfCols * this.numOfRows); i++){
 			this.pushObjectToBoardSlotsArray({
 				index: col,
 				object: {
 					owner: 0,
 					hover: false,
+					winner: false,
 					row: row,
 					col: col,
 				}
@@ -65,9 +70,9 @@ export default{
 
 			row++;
 
-			if (row == 6) {
+			if (row == this.numOfRows) {
 				row = 0;
-				if (col < 6) {
+				if (col < this.numOfCols - 1) {
 					col++;					
 				}
 			}
@@ -109,6 +114,8 @@ export default{
 		...mapState('Board', [
 			'boardSlots',
 			'moves',
+			'numOfRows',
+			'numOfCols'
 		]),
 	},
 
@@ -166,7 +173,7 @@ export default{
 					});
 
 					this.howl.play();
-					this.checkForWin();
+					this.checkForWin(i, col, this.currentPlayer);
 					this.swapToNextPlayer();
 					
 					this.pushToMovesArray({
@@ -174,6 +181,8 @@ export default{
 						col: col,
 						owner: this.currentPlayer,
 					});
+
+
 					this.setUndoneMovesArray([]);
 					break;
 				}
@@ -227,7 +236,71 @@ export default{
 			}
 		},
 
-		checkForWin(){
+		checkForWin(row, col, owner){
+			// Check horizontal
+			{
+				let minCol = Math.max(col - 3, 0);
+				let maxCol = Math.min(col + 3, this.numOfCols - 1);
+
+				let slots = [];
+
+				for(var i = minCol; i <= maxCol; i++){
+					slots.push(this.boardSlots[i][row].owner);
+				}
+
+				this.checkFourInaRow(slots);
+			}
+
+			// Check vertical
+			{
+				let minRow = Math.max(row - 3, 0);
+				let maxRow = Math.min(row + 3, this.numOfRows - 1);
+
+				let slots = [];
+
+				for(var i = minRow; i <= maxRow; i++){
+					slots.push(this.boardSlots[col][i].owner);
+				}
+
+				this.checkFourInaRow(slots);
+			}
+
+			// Check diagonal
+			// {
+			// 	let minCol = Math.max(col - 3, 0);
+			// 	let maxCol = Math.min(col + 3, this.numOfCols - 1);
+			// 	let minRow = Math.max(row - 3, 0);
+			// 	let maxRow = Math.min(row + 3, this.numOfRows - 1);
+
+			// 	for(var i = minCol; i <= maxCol; i++){
+			// 		if(i != col){
+			// 			console.log(i, maxRow - i);
+			// 		}
+			// 	}
+			// }
+		},
+
+		checkFourInaRow(slots){
+			let counter = 1;
+
+			for (var i = 0; i <= slots.length - 1; i++) {
+				if (typeof slots[i + 1] != 'undefined') {
+					if (slots[i] == slots[i + 1]) {
+						counter++;
+					} else {
+						counter = 1;
+					}
+
+					if (counter == 4) {
+						this.alertWinner(slots[i]);
+						break;
+					}
+				}
+			}
+		},
+
+		alertWinner(playerNo){
+			alert(playerNo + " won the game.");
 		}
 	}
 }
@@ -284,7 +357,14 @@ export default{
 			&:first-child{
 				margin-top: 0;
 			}
-
+			position: relative;
+			i{
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%) scale(0.7, 0.7);
+				color: white;
+			}
 			&.ownedBy-player-1{
 				border-color: darken($player-1-color, 10%);
 				background: $player-1-color;
@@ -303,6 +383,10 @@ export default{
 				&.glow{
 					animation: scaleBounce .75s linear, glow .7s infinite alternate;
 				}
+			}
+
+			&.winner{
+				transform: scale(1.5, 1.5);
 			}
 		}
 	}
