@@ -13,4 +13,15 @@
 
 body{
 	background: $body-background;
+
+
+
+
+	 background:
+  radial-gradient(rgba($primary-color, 0.3) 10%, transparent 15%) 0 0,
+  radial-gradient(rgba($primary-color, 0.3) 10%, transparent 15%) 16px 16px,
+  radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 0 1px,
+  radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 16px 17px;
+  background-size: 32px 32px;
+  background-color: $body-background;
 }

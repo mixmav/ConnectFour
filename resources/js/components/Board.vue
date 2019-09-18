@@ -41,7 +41,7 @@ var channel = window.Echo.channel('board-channel');
 export default{
 	mounted(){
 		this.howl = new Howl({
-			src: ['/sounds/player-move.mp3']
+			src: ['/sounds/coin.wav']
 		});
 	},
 
@@ -352,7 +352,7 @@ export default{
 			margin-top: 20px;
 			border-radius: 100%;
 			border: solid 2px $body-background;
-			background: $body-background;
+			background: white;
 			transition: all .2s;
 			&:first-child{
 				margin-top: 0;
