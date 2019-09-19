@@ -24,8 +24,8 @@
 
 		methods: {
 			checkForWin(row, col){
-				this.checkHorizontal(row, col);
-				this.checkVertical(row, col);
+				// this.checkHorizontal(row, col);
+				// this.checkVertical(row, col);
 				this.checkDiagonal(row, col);
 			},
 
@@ -55,18 +55,28 @@
 				this.checkFourInaRow(slots);
 			},
 
-			checkDiagonal(){
-				// Check diagonal
-				// {
-				// 	let minCol = Math.max(col - 3, 0);
-				// 	let maxCol = Math.min(col + 3, this.numOfCols - 1);
-				// 	let minRow = Math.max(row - 3, 0);
-				// 	let maxRow = Math.min(row + 3, this.numOfRows - 1);
+			checkDiagonal(row, col){
+				let minCol = Math.max(col - 3, 0);
+				let maxCol = Math.min(col + 3, this.numOfCols - 1);
+				let minRow = Math.max(row - 3, 0);
+				let maxRow = Math.min(row + 3, this.numOfRows - 1);
 
-				// 	for(var i = minCol; i <= maxCol; i++){
-				// 		if(i != col){
-				// 			console.log(i, maxRow - i);
-				// 		}
+				let currentCol, currentRow;
+
+				// console.log(minCol, maxCol, minRow, maxRow);
+
+				for(var i = col + 1; i <= maxCol; i++){
+					console.log(i);
+				}
+
+				for(var i = col - 1; i >= minCol; i--){
+					console.log(i);
+				}
+
+				// for(currentCol = minCol, currentRow = minRow; currentCol <= maxCol; currentCol++, currentRow++){
+				// 	if(currentCol != col){ //because it's diagonal, self col doesn't count
+
+				// 		console.log(currentCol, currentRow);
 				// 	}
 				// }
 			},
@@ -91,7 +101,7 @@
 			},
 
 			alertWinner(playerNo){
-				alert(playerNo + " won the game.");
+				alert('Player ' + playerNo + " won the game!");
 			},
 		}
 	}
