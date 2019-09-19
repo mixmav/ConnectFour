@@ -22,7 +22,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 	<meta name="theme-color" content="{{config('app.theme_color')}}">
 	<script src="https://kit.fontawesome.com/0db8c7f53e.js" integrity="sha384-vZhmSm3kshNlxPsZGXVLs2e16t4pRD3QYhU12zwY088qFiim63A4g/VpqBVLxTpz" crossorigin="anonymous"></script>
-
+	<script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
+	
 	<link rel="shortcut icon" href="/images/logos/xhdpi.png?v=lOahIyaGhYt">
 	
 	@yield('custom-head')

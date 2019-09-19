@@ -1,10 +1,14 @@
 <template>
-	<div>
-		<button class="btn h-ripple full-width" :disabled="moves.length == 0" @click="undoLastMove"><i class="fa fa-redo-alt"></i>Undo last move</button>
-		<button class="btn h-ripple full-width spaced" :disabled="undoneMoves.length == 0" @click="redoLastMove"><i class="fa fa-redo-alt"></i>Redo last move</button>
-		<button class="btn h-ripple full-width spaced" @click="resetGame"><i class="fa fa-redo-alt"></i>Reset Game</button>
-		<button class="btn h-ripple full-width spaced blue" @click="updateMultiplayer(!multiplayer)"><i class="fa fa-globe-americas"></i>Toggle Multiplayer</button>
-		<p>Multiplayer is <span :class="{green: multiplayer}">{{multiplayerStatus}}</span></p>
+	<div class="container">
+		<div class="controls">
+			<div class="inline-flex">
+				<button class="btn h-ripple full-width" :disabled="moves.length == 0" @click="undoLastMove"><i class="fa fa-redo-alt"></i>Undo</button>
+				<button class="btn h-ripple full-width" :disabled="undoneMoves.length == 0" @click="redoLastMove"><i class="fa fa-redo-alt"></i>Redo</button>
+			</div>
+			<button class="btn h-ripple full-width red spaced-xl" @click="resetGame"><i class="fa fa-recycle"></i>Reset Game</button>
+			<!-- <button class="btn h-ripple full-width spaced blue" @click="updateMultiplayer(!multiplayer)"><i class="fa fa-globe-americas"></i>Toggle Multiplayer</button> -->
+			<!-- <p class="multiplayer">Multiplayer is <span :class="{green: multiplayer}">{{multiplayerStatus}}</span></p> -->
+		</div>		
 	</div>
 </template>
 
@@ -29,7 +33,7 @@ export default {
 		...mapState('Board', [
 			'boardSlots',
 			'moves',
-			'undoneMoves'
+			'undoneMoves',
 		]),
 
 		multiplayerStatus(){
@@ -78,6 +82,13 @@ export default {
 						col: i,
 						row: j,
 						property: 'hover',
+						value: false
+					});
+
+					this.updateSpecificSlotProperty({
+						col: i,
+						row: j,
+						property: 'winner',
 						value: false
 					});
 				}
@@ -134,19 +145,34 @@ export default {
 <style lang="scss" scoped>
 	@import "../../sass/_variables.scss";
 
-	div{
+	div.container{
+		padding: 20px {
+			top: 0;
+		}
+
+		max-width: 300px;
 		text-align: center;
 		margin: 20px auto;
-		max-width: 300px;
+		div.controls{
+			.inline-flex{
+				display: flex;
+				justify-content: space-between;
+				.btn{
+					width: calc(50% - 5px);
+					&:nth-child(2){
+						margin-left: 10px;
+					}
+				}
+			}
+			p.multiplayer{
+				margin-top: 10px;
+				span{
+					font-weight: bold;
+					color: $red;
 
-		p{
-			margin-top: 10px;
-			span{
-				font-weight: bold;
-				color: $red;
-
-				&.green{
-					color: $green;
+					&.green{
+						color: $green;
+					}
 				}
 			}
 		}

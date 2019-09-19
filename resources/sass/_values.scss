@@ -127,6 +127,10 @@
 		margin-top: 10px;
 	}
 
+	&.spaced-xl{
+		margin-top: 30px;
+	}
+
 	&.disabled, &:disabled{
 		box-shadow: none;
 		cursor: default;
@@ -145,6 +149,9 @@
 
 	&.blue{
 		background: $blue;
+	}
+	&.red{
+		background: $red;
 	}
 }
 

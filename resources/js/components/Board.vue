@@ -16,8 +16,8 @@
 								}
 							]"
 				>
-					<i class="fa fa-biohazard" v-if="boardSlot.owner == 1"></i>
-					<i class="fa fa-anchor" v-if="boardSlot.owner == 2"></i>
+					<i :class="'fa ' + playerOneIcon" v-if="boardSlot.owner == 1"></i>
+					<i :class="'fa ' + playerTwoIcon" v-if="boardSlot.owner == 2"></i>
 				</div>
 		</div>
 	</div>
@@ -115,7 +115,9 @@ export default{
 			'boardSlots',
 			'moves',
 			'numOfRows',
-			'numOfCols'
+			'numOfCols',
+			'playerOneIcon',
+			'playerTwoIcon'
 		]),
 	},
 
@@ -173,7 +175,9 @@ export default{
 					});
 
 					this.howl.play();
-					this.checkForWin(i, col, this.currentPlayer);
+					
+					this.$root.$emit('checkForWin', {i, col});
+					
 					this.swapToNextPlayer();
 					
 					this.pushToMovesArray({
@@ -235,73 +239,6 @@ export default{
 				}
 			}
 		},
-
-		checkForWin(row, col, owner){
-			// Check horizontal
-			{
-				let minCol = Math.max(col - 3, 0);
-				let maxCol = Math.min(col + 3, this.numOfCols - 1);
-
-				let slots = [];
-
-				for(var i = minCol; i <= maxCol; i++){
-					slots.push(this.boardSlots[i][row].owner);
-				}
-
-				this.checkFourInaRow(slots);
-			}
-
-			// Check vertical
-			{
-				let minRow = Math.max(row - 3, 0);
-				let maxRow = Math.min(row + 3, this.numOfRows - 1);
-
-				let slots = [];
-
-				for(var i = minRow; i <= maxRow; i++){
-					slots.push(this.boardSlots[col][i].owner);
-				}
-
-				this.checkFourInaRow(slots);
-			}
-
-			// Check diagonal
-			// {
-			// 	let minCol = Math.max(col - 3, 0);
-			// 	let maxCol = Math.min(col + 3, this.numOfCols - 1);
-			// 	let minRow = Math.max(row - 3, 0);
-			// 	let maxRow = Math.min(row + 3, this.numOfRows - 1);
-
-			// 	for(var i = minCol; i <= maxCol; i++){
-			// 		if(i != col){
-			// 			console.log(i, maxRow - i);
-			// 		}
-			// 	}
-			// }
-		},
-
-		checkFourInaRow(slots){
-			let counter = 1;
-
-			for (var i = 0; i <= slots.length - 1; i++) {
-				if (typeof slots[i + 1] != 'undefined') {
-					if (slots[i] == slots[i + 1]) {
-						counter++;
-					} else {
-						counter = 1;
-					}
-
-					if (counter == 4) {
-						this.alertWinner(slots[i]);
-						break;
-					}
-				}
-			}
-		},
-
-		alertWinner(playerNo){
-			alert(playerNo + " won the game.");
-		}
 	}
 }
 
@@ -328,7 +265,7 @@ export default{
 		cursor: pointer;
 
 		&:hover{
-			background: lighten($board-background, 10%);
+			background: darken($board-background, 5%);
 		}
 
 		&:first-child{
@@ -393,8 +330,8 @@ export default{
 	&.current-player-1{
 		.board-col{
 			.board-slot.hover{
-				border-color: darken($player-1-color, 10%);
-				background: $player-1-color;
+				// border-color: darken($player-1-color, 10%);
+				background: lighten($player-1-color, 5%);
 			}
 		}
 	}
@@ -402,8 +339,8 @@ export default{
 	&.current-player-2{
 		.board-col{
 			.board-slot.hover{
-				border-color: darken($player-2-color, 10%);
-				background: $player-2-color;
+				// border-color: darken($player-2-color, 10%);
+				background: lighten($player-2-color, 5%);
 			}
 		}
 	}	

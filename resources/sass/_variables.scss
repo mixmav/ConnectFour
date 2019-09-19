@@ -20,9 +20,12 @@ $primary-color: #F2DC5D;
 $body-background: white;
 
 $board-background: #AEDCC0;
+$board-background: #FFE2D1;
+
+
 $board-border-color: darken($board-background, 10%);
 
-$player-1-color: #353238;
+$player-1-color: lighten(#353238, 10%);
 $player-2-color: #E54B4B;
 
 
