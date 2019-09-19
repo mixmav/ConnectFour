@@ -42,7 +42,7 @@
 				this.checkFourInaRow(slots);
 			},
 
-			checkVertical(){
+			checkVertical(row, col){
 				let minRow = Math.max(row - 3, 0);
 				let maxRow = Math.min(row + 3, this.numOfRows - 1);
 

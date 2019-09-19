@@ -19,7 +19,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="csrf-token" content="{{ csrf_token() }}">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="theme-color" content="{{config('app.theme_color')}}">
 	<script src="https://kit.fontawesome.com/0db8c7f53e.js" integrity="sha384-vZhmSm3kshNlxPsZGXVLs2e16t4pRD3QYhU12zwY088qFiim63A4g/VpqBVLxTpz" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>

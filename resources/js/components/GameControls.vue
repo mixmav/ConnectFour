@@ -148,6 +148,7 @@ export default {
 	div.container{
 		padding: 20px {
 			top: 0;
+			bottom: 100px;
 		}
 
 		max-width: 300px;

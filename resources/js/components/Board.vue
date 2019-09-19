@@ -176,7 +176,7 @@ export default{
 
 					this.howl.play();
 					
-					this.$root.$emit('checkForWin', {i, col});
+					this.$root.$emit('checkForWin', {row: i, col: col});
 					
 					this.swapToNextPlayer();
 					
@@ -284,39 +284,23 @@ export default{
 		}	
 
 		.board-slot{
-			width: 30px;
-			height: 30px;
 			margin-top: 20px;
-			border-radius: 100%;
 			border: solid 2px $body-background;
 			background: white;
-			transition: all .2s;
 			&:first-child{
 				margin-top: 0;
 			}
 			position: relative;
-			i{
-				position: absolute;
-				top: 50%;
-				left: 50%;
-				transform: translate(-50%, -50%) scale(0.7, 0.7);
-				color: white;
-			}
+			@extend .checker-design;
 			&.ownedBy-player-1{
-				border-color: darken($player-1-color, 10%);
-				background: $player-1-color;
 				animation: scaleBounce .75s linear;
-
 				&.glow{
 					animation: scaleBounce .75s linear, glow .7s infinite alternate;
 				}
 			}
 
 			&.ownedBy-player-2{
-				border-color: darken($player-2-color, 20%);
-				background: $player-2-color;
 				animation: scaleBounce .75s linear;
-				
 				&.glow{
 					animation: scaleBounce .75s linear, glow .7s infinite alternate;
 				}
