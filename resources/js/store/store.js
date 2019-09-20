@@ -15,6 +15,7 @@ export const store = new Vuex.Store({
 	state: {
 		currentPlayer: 1,
 		multiplayer: false,
+		playerCanPlay: true,
 	},
 
 	mutations: {
@@ -28,6 +29,10 @@ export const store = new Vuex.Store({
 
 		updateMultiplayer(state, value){
 			state.multiplayer = value;
+		},
+
+		updatePlayerCanPlay(state, value){
+			state.playerCanPlay = value;
 		}
 	},
 
@@ -38,6 +43,10 @@ export const store = new Vuex.Store({
 
 		updateMultiplayer(context, value){
 			context.commit('updateMultiplayer', value);
-		}
+		},
+
+		updatePlayerCanPlay(context, value){
+			context.commit('updatePlayerCanPlay', value);
+		},
 	}
 });

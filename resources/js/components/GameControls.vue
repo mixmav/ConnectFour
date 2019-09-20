@@ -2,10 +2,10 @@
 	<div class="container">
 		<div class="controls">
 			<div class="inline-flex">
-				<button class="btn h-ripple full-width" :disabled="moves.length == 0" @click="undoLastMove"><i class="fa fa-redo-alt"></i>Undo</button>
-				<button class="btn h-ripple full-width" :disabled="undoneMoves.length == 0" @click="redoLastMove"><i class="fa fa-redo-alt"></i>Redo</button>
+				<button class="btn h-ripple full-width" :disabled="(moves.length == 0 || !playerCanPlay)" @click="undoLastMove"><i class="fa fa-undo-alt"></i>Undo</button>
+				<button class="btn h-ripple full-width" :disabled="(undoneMoves.length == 0 || !playerCanPlay)" @click="redoLastMove"><i class="fa fa-redo-alt"></i>Redo</button>
 			</div>
-			<button class="btn h-ripple full-width red spaced-xl" @click="resetGame"><i class="fa fa-recycle"></i>Reset Game</button>
+			<button class="btn h-ripple full-width red spaced-xl" @click="resetBoard"><i class="fa fa-recycle"></i>Reset Board</button>
 			<!-- <button class="btn h-ripple full-width spaced blue" @click="updateMultiplayer(!multiplayer)"><i class="fa fa-globe-americas"></i>Toggle Multiplayer</button> -->
 			<!-- <p class="multiplayer">Multiplayer is <span :class="{green: multiplayer}">{{multiplayerStatus}}</span></p> -->
 		</div>		
@@ -27,7 +27,8 @@ export default {
 	computed: {
 		...mapState([
 			'currentPlayer',
-			'multiplayer'
+			'multiplayer',
+			'playerCanPlay'
 		]),
 
 		...mapState('Board', [
@@ -54,7 +55,8 @@ export default {
 	methods: {
 		...mapActions([
 			'swapToNextPlayer',
-			'updateMultiplayer'
+			'updateMultiplayer',
+			'updatePlayerCanPlay',
 		]),
 
 		...mapActions('Board', [
@@ -68,7 +70,7 @@ export default {
 			'setUndoneMovesArray',
 		]),
 
-		resetGame(){
+		resetBoard(){
 			for (var i = this.boardSlots.length - 1; i >= 0; i--) {
 				for (var j = this.boardSlots[i].length - 1; j >= 0; j--) {
 					this.updateSpecificSlotProperty({
@@ -98,6 +100,7 @@ export default {
 			}
 			this.setMovesArray([]);
 			this.setUndoneMovesArray([]);
+			this.updatePlayerCanPlay(true);
 			this.howl.play();
 		},
 

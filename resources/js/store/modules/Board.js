@@ -48,7 +48,7 @@ export const Board = {
 
 		popUndoneMovesArray(state){
 			state.undoneMoves.pop();
-		}
+		},
 	},
 
 	actions: {
@@ -86,6 +86,6 @@ export const Board = {
 
 		popUndoneMovesArray(context){
 			context.commit('popUndoneMovesArray');
-		}
+		},
 	}
 }

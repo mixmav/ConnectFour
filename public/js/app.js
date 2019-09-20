@@ -246,7 +246,11 @@ var channel = window.Echo.channel('board-channel');
       howl: {}
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])(['currentPlayer', 'multiplayer']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('Board', ['boardSlots', 'moves', 'numOfRows', 'numOfCols', 'playerOneIcon', 'playerTwoIcon'])),
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])(['currentPlayer', 'multiplayer', 'playerCanPlay']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('Board', ['boardSlots', 'moves', 'numOfRows', 'numOfCols', 'playerOneIcon', 'playerTwoIcon']), {
+    numOfMoves: function numOfMoves() {
+      return this.moves.length;
+    }
+  }),
   methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])(['swapToNextPlayer']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('Board', ['setBoardSlotsArray', 'pushObjectToBoardSlotsArray', 'updateSpecificSlotProperty', 'pushToMovesArray', 'setUndoneMovesArray']), {
     shouldGlow: function shouldGlow(row, col) {
       if (this.moves.length > 0) {
@@ -272,38 +276,44 @@ var channel = window.Echo.channel('board-channel');
       return isFull;
     },
     checkSlot: function checkSlot(col) {
-      for (var i = this.boardSlots[0].length - 1; i >= 0; i--) {
-        if (this.boardSlots[col][i].owner == 0) {
-          this.updateSpecificSlotProperty({
-            col: col,
-            row: i,
-            property: 'owner',
-            value: this.currentPlayer
-          });
-          this.updateSpecificSlotProperty({
-            col: col,
-            row: i,
-            property: 'hover',
-            value: false
-          });
-          this.howl.play();
-          this.$root.$emit('checkForWin', {
-            row: i,
-            col: col
-          });
-          this.swapToNextPlayer();
-          this.pushToMovesArray({
-            row: i,
-            col: col,
-            owner: this.currentPlayer
-          });
-          this.setUndoneMovesArray([]);
-          break;
-        }
-      }
+      if (this.playerCanPlay) {
+        for (var i = this.boardSlots[0].length - 1; i >= 0; i--) {
+          if (this.boardSlots[col][i].owner == 0) {
+            this.updateSpecificSlotProperty({
+              col: col,
+              row: i,
+              property: 'owner',
+              value: this.currentPlayer
+            });
+            this.updateSpecificSlotProperty({
+              col: col,
+              row: i,
+              property: 'hover',
+              value: false
+            });
+            this.howl.play();
 
-      if (this.multiplayer) {
-        this.broadcastMove();
+            if (this.numOfMoves > 6) {
+              this.$root.$emit('checkForWin', {
+                row: i,
+                col: col
+              });
+            }
+
+            this.swapToNextPlayer();
+            this.pushToMovesArray({
+              row: i,
+              col: col,
+              owner: this.currentPlayer
+            });
+            this.setUndoneMovesArray([]);
+            break;
+          }
+        }
+
+        if (this.multiplayer) {
+          this.broadcastMove();
+        }
       }
     },
     broadcastMove: function broadcastMove() {
@@ -318,7 +328,7 @@ var channel = window.Echo.channel('board-channel');
       });
     },
     addHoverClass: function addHoverClass(col) {
-      if (!this.colIsFull(col)) {
+      if (!this.colIsFull(col) && this.playerCanPlay) {
         for (var i = 5; i >= 0; i--) {
           if (this.boardSlots[col][i].owner == 0) {
             this.updateSpecificSlotProperty({
@@ -390,7 +400,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       src: ['/sounds/player-move.mp3']
     });
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])(['currentPlayer', 'multiplayer']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('Board', ['boardSlots', 'moves', 'undoneMoves']), {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])(['currentPlayer', 'multiplayer', 'playerCanPlay']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('Board', ['boardSlots', 'moves', 'undoneMoves']), {
     multiplayerStatus: function multiplayerStatus() {
       if (this.multiplayer) {
         return "ON";
@@ -404,8 +414,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       howl: {}
     };
   },
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])(['swapToNextPlayer', 'updateMultiplayer']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('Board', ['updateSpecificSlotProperty', 'popMovesArray', 'pushToMovesArray', 'setMovesArray', 'popUndoneMovesArray', 'pushToUndoneMovesArray', 'setUndoneMovesArray']), {
-    resetGame: function resetGame() {
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])(['swapToNextPlayer', 'updateMultiplayer', 'updatePlayerCanPlay']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('Board', ['updateSpecificSlotProperty', 'popMovesArray', 'pushToMovesArray', 'setMovesArray', 'popUndoneMovesArray', 'pushToUndoneMovesArray', 'setUndoneMovesArray']), {
+    resetBoard: function resetBoard() {
       for (var i = this.boardSlots.length - 1; i >= 0; i--) {
         for (var j = this.boardSlots[i].length - 1; j >= 0; j--) {
           this.updateSpecificSlotProperty({
@@ -435,6 +445,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       this.setMovesArray([]);
       this.setUndoneMovesArray([]);
+      this.updatePlayerCanPlay(true);
       this.howl.play();
     },
     undoLastMove: function undoLastMove() {
@@ -535,7 +546,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
@@ -545,11 +555,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       _this.checkForWin(data.row, data.col);
     });
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('Board', ['boardSlots', 'numOfRows', 'numOfCols'])),
-  methods: {
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])('Board', ['boardSlots', 'numOfRows', 'numOfCols', 'moves'])),
+  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])(['updatePlayerCanPlay']), {}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])('Board', ['updateSpecificSlotProperty']), {
     checkForWin: function checkForWin(row, col) {
-      // this.checkHorizontal(row, col);
-      // this.checkVertical(row, col);
+      this.checkHorizontal(row, col);
+      this.checkVertical(row, col);
       this.checkDiagonal(row, col);
     },
     checkHorizontal: function checkHorizontal(row, col) {
@@ -558,7 +568,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var slots = [];
 
       for (var i = minCol; i <= maxCol; i++) {
-        slots.push(this.boardSlots[i][row].owner);
+        slots.push({
+          col: i,
+          row: row,
+          owner: this.boardSlots[i][row].owner
+        });
       }
 
       this.checkFourInaRow(slots);
@@ -569,53 +583,83 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var slots = [];
 
       for (var i = minRow; i <= maxRow; i++) {
-        slots.push(this.boardSlots[col][i].owner);
+        slots.push({
+          col: col,
+          row: i,
+          owner: this.boardSlots[col][i].owner
+        });
       }
 
       this.checkFourInaRow(slots);
     },
     checkDiagonal: function checkDiagonal(row, col) {
-      var minCol = Math.max(col - 3, 0);
-      var maxCol = Math.min(col + 3, this.numOfCols - 1);
-      var minRow = Math.max(row - 3, 0);
-      var maxRow = Math.min(row + 3, this.numOfRows - 1);
-      var currentCol, currentRow; // console.log(minCol, maxCol, minRow, maxRow);
+      var minViableCol, maxViableCol, minViableRow, currentCol, currentRow;
+      var slots = [];
+      minViableCol = Math.max(col - Math.abs(row - Math.min(row + 3, this.numOfRows - 1)), 0);
+      maxViableCol = Math.min(col + (row - Math.max(row - 3, 0)), this.numOfCols - 1);
+      minViableRow = row + (col - minViableCol);
 
-      for (var i = col + 1; i <= maxCol; i++) {
-        console.log(i);
+      for (currentCol = minViableCol, currentRow = minViableRow; currentCol <= maxViableCol; currentCol++, currentRow--) {
+        slots.push({
+          col: currentCol,
+          row: currentRow,
+          owner: this.boardSlots[currentCol][currentRow].owner
+        });
       }
 
-      for (var i = col - 1; i >= minCol; i--) {
-        console.log(i);
-      } // for(currentCol = minCol, currentRow = minRow; currentCol <= maxCol; currentCol++, currentRow++){
-      // 	if(currentCol != col){ //because it's diagonal, self col doesn't count
-      // 		console.log(currentCol, currentRow);
-      // 	}
-      // }
+      this.checkFourInaRow(slots);
+      minViableCol = Math.max(col - Math.abs(row - Math.max(row - 3, 0)), 0);
+      maxViableCol = Math.min(col + Math.abs(row - Math.min(row + 3, this.numOfRows - 1)), this.numOfCols - 1);
+      minViableRow = row - (col - minViableCol);
+      slots = [];
 
+      for (currentCol = minViableCol, currentRow = minViableRow; currentCol <= maxViableCol; currentCol++, currentRow++) {
+        slots.push({
+          col: currentCol,
+          row: currentRow,
+          owner: this.boardSlots[currentCol][currentRow].owner
+        });
+      }
+
+      this.checkFourInaRow(slots);
     },
     checkFourInaRow: function checkFourInaRow(slots) {
       var counter = 1;
+      var winningSlots = [0];
 
       for (var i = 0; i <= slots.length - 1; i++) {
         if (typeof slots[i + 1] != 'undefined') {
-          if (slots[i] == slots[i + 1]) {
+          if (slots[i].owner == slots[i + 1].owner) {
             counter++;
+            winningSlots.push(i + 1);
           } else {
             counter = 1;
+            winningSlots = [i + 1];
           }
 
           if (counter == 4) {
-            this.alertWinner(slots[i]);
+            for (var _i = 0; _i <= winningSlots.length - 1; _i++) {
+              this.updateSpecificSlotProperty({
+                col: slots[winningSlots[_i]].col,
+                row: slots[winningSlots[_i]].row,
+                property: 'winner',
+                value: true
+              });
+            }
+
+            this.alertWinner(slots[i].owner);
             break;
           }
+        } else {
+          winningSlots.push(i);
         }
       }
     },
     alertWinner: function alertWinner(playerNo) {
+      this.updatePlayerCanPlay(false);
       alert('Player ' + playerNo + " won the game!");
     }
-  }
+  })
 });
 
 /***/ }),
@@ -2598,7 +2642,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".checker-design, #board .board-col .board-slot {\n  width: 30px;\n  height: 30px;\n  border-radius: 100%;\n  transition: all 0.2s;\n}\n.checker-design i, #board .board-col .board-slot i {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%) scale(0.7, 0.7);\n  color: white;\n}\n.checker-design.ownedBy-player-1, #board .board-col .ownedBy-player-1.board-slot, .checker-design.player-1, #board .board-col .player-1.board-slot {\n  border-color: #353238;\n  background: #4f4a53;\n}\n.checker-design.ownedBy-player-1 i, #board .board-col .ownedBy-player-1.board-slot i, .checker-design.player-1 i, #board .board-col .player-1.board-slot i {\n  color: #9b95a1;\n}\n.checker-design.ownedBy-player-2, #board .board-col .ownedBy-player-2.board-slot, .checker-design.player-2, #board .board-col .player-2.board-slot {\n  border-color: #b11919;\n  background: #E54B4B;\n}\n.checker-design.ownedBy-player-2 i, #board .board-col .ownedBy-player-2.board-slot i, .checker-design.player-2 i, #board .board-col .player-2.board-slot i {\n  color: #841313;\n}\n#board {\n  margin-top: 40px;\n  text-align: center;\n}\n#board .board-col {\n  padding: 15px;\n  display: inline-block;\n  border-top: solid 2px #ffc29e;\n  border-bottom: solid 2px #ffc29e;\n  background: #FFE2D1;\n  transition: all 0.2s;\n  cursor: pointer;\n}\n#board .board-col:hover {\n  background: #ffd2b8;\n}\n#board .board-col:first-child {\n  border-left: solid 2px #ffc29e;\n  border-top-left-radius: 10px;\n  border-bottom-left-radius: 10px;\n}\n#board .board-col:last-child {\n  border-right: solid 2px #ffc29e;\n  border-top-right-radius: 10px;\n  border-bottom-right-radius: 10px;\n}\n#board .board-col.col-full {\n  cursor: default;\n}\n#board .board-col .board-slot {\n  margin-top: 20px;\n  border: solid 2px white;\n  background: white;\n  position: relative;\n}\n#board .board-col .board-slot:first-child {\n  margin-top: 0;\n}\n#board .board-col .board-slot.ownedBy-player-1 {\n  -webkit-animation: scaleBounce 0.75s linear;\n          animation: scaleBounce 0.75s linear;\n}\n#board .board-col .board-slot.ownedBy-player-1.glow {\n  -webkit-animation: scaleBounce 0.75s linear, glow 0.7s infinite alternate;\n          animation: scaleBounce 0.75s linear, glow 0.7s infinite alternate;\n}\n#board .board-col .board-slot.ownedBy-player-2 {\n  -webkit-animation: scaleBounce 0.75s linear;\n          animation: scaleBounce 0.75s linear;\n}\n#board .board-col .board-slot.ownedBy-player-2.glow {\n  -webkit-animation: scaleBounce 0.75s linear, glow 0.7s infinite alternate;\n          animation: scaleBounce 0.75s linear, glow 0.7s infinite alternate;\n}\n#board .board-col .board-slot.winner {\n  transform: scale(1.5, 1.5);\n}\n#board.current-player-1 .board-col .board-slot.hover {\n  background: #5b5660;\n}\n#board.current-player-2 .board-col .board-slot.hover {\n  background: #e86161;\n}\n@media only screen and (max-width: 465px) {\n#board .board-col {\n    padding-left: 10px;\n    padding-right: 10px;\n}\n#board .board-col:first-child {\n    padding-left: 15px;\n}\n#board .board-col:last-child {\n    padding-right: 15px;\n}\n#board .board-col .board-slot {\n    width: 25px;\n    height: 25px;\n}\n}\n@media only screen and (max-width: 370px) {\n#board .board-col {\n    padding-left: 8px;\n    padding-right: 8px;\n}\n#board .board-col:first-child {\n    padding-left: 12px;\n}\n#board .board-col:last-child {\n    padding-right: 12px;\n}\n#board .board-col .board-slot {\n    width: 20px;\n    height: 20px;\n}\n}\n@-webkit-keyframes glow {\nfrom {\n    box-shadow: 0 0 10px -10px white;\n}\nto {\n    box-shadow: 0 0 10px 10px white;\n}\n}\n@keyframes glow {\nfrom {\n    box-shadow: 0 0 10px -10px white;\n}\nto {\n    box-shadow: 0 0 10px 10px white;\n}\n}", ""]);
+exports.push([module.i, ".checker-design, #board .board-col .board-slot {\n  width: 30px;\n  height: 30px;\n  border-radius: 100%;\n  transition: all 0.2s;\n}\n.checker-design i, #board .board-col .board-slot i {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%) scale(0.7, 0.7);\n  color: white;\n}\n.checker-design.ownedBy-player-1, #board .board-col .ownedBy-player-1.board-slot, .checker-design.player-1, #board .board-col .player-1.board-slot {\n  border-color: #353238;\n  background: #4f4a53;\n}\n.checker-design.ownedBy-player-1 i, #board .board-col .ownedBy-player-1.board-slot i, .checker-design.player-1 i, #board .board-col .player-1.board-slot i {\n  color: #9b95a1;\n}\n.checker-design.ownedBy-player-2, #board .board-col .ownedBy-player-2.board-slot, .checker-design.player-2, #board .board-col .player-2.board-slot {\n  border-color: #b11919;\n  background: #E54B4B;\n}\n.checker-design.ownedBy-player-2 i, #board .board-col .ownedBy-player-2.board-slot i, .checker-design.player-2 i, #board .board-col .player-2.board-slot i {\n  color: #841313;\n}\n#board {\n  margin-top: 40px;\n  text-align: center;\n}\n#board.disabled {\n  pointer-events: none;\n}\n#board .board-col {\n  padding: 15px;\n  display: inline-block;\n  border-top: solid 2px #ffc29e;\n  border-bottom: solid 2px #ffc29e;\n  background: #FFE2D1;\n  transition: all 0.2s;\n  cursor: pointer;\n}\n#board .board-col:hover {\n  background: #ffd2b8;\n}\n#board .board-col:first-child {\n  border-left: solid 2px #ffc29e;\n  border-top-left-radius: 10px;\n  border-bottom-left-radius: 10px;\n}\n#board .board-col:last-child {\n  border-right: solid 2px #ffc29e;\n  border-top-right-radius: 10px;\n  border-bottom-right-radius: 10px;\n}\n#board .board-col.col-full {\n  cursor: default;\n}\n#board .board-col .board-slot {\n  margin-top: 20px;\n  border: solid 2px white;\n  background: white;\n  position: relative;\n}\n#board .board-col .board-slot:first-child {\n  margin-top: 0;\n}\n#board .board-col .board-slot.winner {\n  transform: scale(1.5, 1.5);\n}\n#board .board-col .board-slot.winner i {\n  color: white;\n}\n#board .board-col .board-slot.ownedBy-player-1 {\n  -webkit-animation: scaleBounce 0.75s linear;\n          animation: scaleBounce 0.75s linear;\n}\n#board .board-col .board-slot.ownedBy-player-1.glow {\n  -webkit-animation: scaleBounce 0.75s linear, glow 0.7s infinite alternate;\n          animation: scaleBounce 0.75s linear, glow 0.7s infinite alternate;\n}\n#board .board-col .board-slot.ownedBy-player-1.winner {\n  background: #756e7b;\n}\n#board .board-col .board-slot.ownedBy-player-2 {\n  -webkit-animation: scaleBounce 0.75s linear;\n          animation: scaleBounce 0.75s linear;\n}\n#board .board-col .board-slot.ownedBy-player-2.glow {\n  -webkit-animation: scaleBounce 0.75s linear, glow 0.7s infinite alternate;\n          animation: scaleBounce 0.75s linear, glow 0.7s infinite alternate;\n}\n#board .board-col .board-slot.winner {\n  background: #ef8e8e;\n}\n#board.current-player-1 .board-col .board-slot.hover {\n  background: #5b5660;\n}\n#board.current-player-2 .board-col .board-slot.hover {\n  background: #e86161;\n}\n@media only screen and (max-width: 465px) {\n#board .board-col {\n    padding-left: 10px;\n    padding-right: 10px;\n}\n#board .board-col:first-child {\n    padding-left: 15px;\n}\n#board .board-col:last-child {\n    padding-right: 15px;\n}\n#board .board-col .board-slot {\n    width: 25px;\n    height: 25px;\n}\n}\n@media only screen and (max-width: 370px) {\n#board .board-col {\n    padding-left: 8px;\n    padding-right: 8px;\n}\n#board .board-col:first-child {\n    padding-left: 12px;\n}\n#board .board-col:last-child {\n    padding-right: 12px;\n}\n#board .board-col .board-slot {\n    width: 20px;\n    height: 20px;\n}\n}\n@-webkit-keyframes glow {\nfrom {\n    box-shadow: 0 0 10px -10px white;\n}\nto {\n    box-shadow: 0 0 10px 10px white;\n}\n}\n@keyframes glow {\nfrom {\n    box-shadow: 0 0 10px -10px white;\n}\nto {\n    box-shadow: 0 0 10px 10px white;\n}\n}", ""]);
 
 // exports
 
@@ -25938,7 +25982,10 @@ var render = function() {
     "div",
     {
       staticClass: "no-select",
-      class: "current-player-" + _vm.currentPlayer,
+      class: [
+        "current-player-" + _vm.currentPlayer,
+        { disabled: !_vm.playerCanPlay }
+      ],
       attrs: { id: "board" }
     },
     _vm._l(_vm.boardSlots, function(i, col) {
@@ -25974,13 +26021,29 @@ var render = function() {
               ]
             },
             [
-              boardSlot.owner == 1
-                ? _c("i", { class: "fa " + _vm.playerOneIcon })
-                : _vm._e(),
+              _c("i", {
+                directives: [
+                  {
+                    name: "show",
+                    rawName: "v-show",
+                    value: boardSlot.owner == 1,
+                    expression: "boardSlot.owner == 1"
+                  }
+                ],
+                class: "fa " + _vm.playerOneIcon
+              }),
               _vm._v(" "),
-              boardSlot.owner == 2
-                ? _c("i", { class: "fa " + _vm.playerTwoIcon })
-                : _vm._e()
+              _c("i", {
+                directives: [
+                  {
+                    name: "show",
+                    rawName: "v-show",
+                    value: boardSlot.owner == 2,
+                    expression: "boardSlot.owner == 2"
+                  }
+                ],
+                class: "fa " + _vm.playerTwoIcon
+              })
             ]
           )
         }),
@@ -26019,17 +26082,19 @@ var render = function() {
           "button",
           {
             staticClass: "btn h-ripple full-width",
-            attrs: { disabled: _vm.moves.length == 0 },
+            attrs: { disabled: _vm.moves.length == 0 || !_vm.playerCanPlay },
             on: { click: _vm.undoLastMove }
           },
-          [_c("i", { staticClass: "fa fa-redo-alt" }), _vm._v("Undo")]
+          [_c("i", { staticClass: "fa fa-undo-alt" }), _vm._v("Undo")]
         ),
         _vm._v(" "),
         _c(
           "button",
           {
             staticClass: "btn h-ripple full-width",
-            attrs: { disabled: _vm.undoneMoves.length == 0 },
+            attrs: {
+              disabled: _vm.undoneMoves.length == 0 || !_vm.playerCanPlay
+            },
             on: { click: _vm.redoLastMove }
           },
           [_c("i", { staticClass: "fa fa-redo-alt" }), _vm._v("Redo")]
@@ -26040,9 +26105,9 @@ var render = function() {
         "button",
         {
           staticClass: "btn h-ripple full-width red spaced-xl",
-          on: { click: _vm.resetGame }
+          on: { click: _vm.resetBoard }
         },
-        [_c("i", { staticClass: "fa fa-recycle" }), _vm._v("Reset Game")]
+        [_c("i", { staticClass: "fa fa-recycle" }), _vm._v("Reset Board")]
       )
     ])
   ])
@@ -39706,15 +39771,14 @@ __webpack_require__.r(__webpack_exports__);
 /*!************************************************!*\
   !*** ./resources/js/components/WinChecker.vue ***!
   \************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _WinChecker_vue_vue_type_template_id_5b94b464___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./WinChecker.vue?vue&type=template&id=5b94b464& */ "./resources/js/components/WinChecker.vue?vue&type=template&id=5b94b464&");
 /* harmony import */ var _WinChecker_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./WinChecker.vue?vue&type=script&lang=js& */ "./resources/js/components/WinChecker.vue?vue&type=script&lang=js&");
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _WinChecker_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _WinChecker_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
@@ -39744,7 +39808,7 @@ component.options.__file = "resources/js/components/WinChecker.vue"
 /*!*************************************************************************!*\
   !*** ./resources/js/components/WinChecker.vue?vue&type=script&lang=js& ***!
   \*************************************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -39902,7 +39966,8 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
   },
   state: {
     currentPlayer: 1,
-    multiplayer: false
+    multiplayer: false,
+    playerCanPlay: true
   },
   mutations: {
     swapToNextPlayer: function swapToNextPlayer(state) {
@@ -39914,6 +39979,9 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     },
     updateMultiplayer: function updateMultiplayer(state, value) {
       state.multiplayer = value;
+    },
+    updatePlayerCanPlay: function updatePlayerCanPlay(state, value) {
+      state.playerCanPlay = value;
     }
   },
   actions: {
@@ -39922,6 +39990,9 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     },
     updateMultiplayer: function updateMultiplayer(context, value) {
       context.commit('updateMultiplayer', value);
+    },
+    updatePlayerCanPlay: function updatePlayerCanPlay(context, value) {
+      context.commit('updatePlayerCanPlay', value);
     }
   }
 });
@@ -39946,8 +40017,8 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! D:\xampp\htdocs\ConnectFour\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! D:\xampp\htdocs\ConnectFour\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\xampp\htdocs\ConnectFour\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\xampp\htdocs\ConnectFour\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

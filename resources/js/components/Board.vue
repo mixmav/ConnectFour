@@ -1,5 +1,5 @@
 <template>
-	<div id="board" class="no-select" :class="'current-player-' + currentPlayer">
+	<div id="board" class="no-select" :class="['current-player-' + currentPlayer, {disabled: !playerCanPlay}]">
 		<div class="board-col"
 			v-for="(i, col) in boardSlots"
 			:class="[{'col-full': colIsFull(col)}]"
@@ -16,8 +16,8 @@
 								}
 							]"
 				>
-					<i :class="'fa ' + playerOneIcon" v-if="boardSlot.owner == 1"></i>
-					<i :class="'fa ' + playerTwoIcon" v-if="boardSlot.owner == 2"></i>
+					<i :class="'fa ' + playerOneIcon" v-show="boardSlot.owner == 1"></i>
+					<i :class="'fa ' + playerTwoIcon" v-show="boardSlot.owner == 2"></i>
 				</div>
 		</div>
 	</div>
@@ -110,6 +110,7 @@ export default{
 		...mapState([
 			'currentPlayer',
 			'multiplayer',
+			'playerCanPlay',
 		]),
 		...mapState('Board', [
 			'boardSlots',
@@ -117,8 +118,12 @@ export default{
 			'numOfRows',
 			'numOfCols',
 			'playerOneIcon',
-			'playerTwoIcon'
+			'playerTwoIcon',
 		]),
+
+		numOfMoves(){
+			return this.moves.length;
+		}
 	},
 
 	methods: {
@@ -158,44 +163,46 @@ export default{
 		},
 
 		checkSlot(col){
-			for(var i = (this.boardSlots[0].length - 1); i >= 0; i--){
-				if (this.boardSlots[col][i].owner == 0) {
-					this.updateSpecificSlotProperty({
-						col: col,
-						row: i,
-						property: 'owner',
-						value: this.currentPlayer
-					});
+			if (this.playerCanPlay) {
+				for(var i = (this.boardSlots[0].length - 1); i >= 0; i--){
+					if (this.boardSlots[col][i].owner == 0) {
+						this.updateSpecificSlotProperty({
+							col: col,
+							row: i,
+							property: 'owner',
+							value: this.currentPlayer
+						});
 
-					this.updateSpecificSlotProperty({
-						col: col,
-						row: i,
-						property: 'hover',
-						value: false
-					});
+						this.updateSpecificSlotProperty({
+							col: col,
+							row: i,
+							property: 'hover',
+							value: false
+						});
 
-					this.howl.play();
-					
-					this.$root.$emit('checkForWin', {row: i, col: col});
-					
-					this.swapToNextPlayer();
-					
-					this.pushToMovesArray({
-						row: i,
-						col: col,
-						owner: this.currentPlayer,
-					});
+						this.howl.play();
+
+						if (this.numOfMoves > 6) {
+							this.$root.$emit('checkForWin', {row: i, col: col});
+						}
+
+						this.swapToNextPlayer();
+						this.pushToMovesArray({
+							row: i,
+							col: col,
+							owner: this.currentPlayer,
+						});
 
 
-					this.setUndoneMovesArray([]);
-					break;
+						this.setUndoneMovesArray([]);
+						break;
+					}
+				}
+
+				if (this.multiplayer) {
+					this.broadcastMove();				
 				}
 			}
-
-			if (this.multiplayer) {
-				this.broadcastMove();				
-			}
-
 		},
 
 		broadcastMove(){
@@ -211,7 +218,7 @@ export default{
 		},
 
 		addHoverClass(col){
-			if (!this.colIsFull(col)) {
+			if (!this.colIsFull(col) && this.playerCanPlay) {
 				for(var i = 5; i >= 0; i--){
 					if (this.boardSlots[col][i].owner == 0) {
 						this.updateSpecificSlotProperty({
@@ -250,11 +257,12 @@ export default{
 #board{
 	margin-top: 40px;
 	text-align: center;
-	
+	&.disabled{
+		pointer-events: none;
+	}
 	.board-col{
 		padding: 15px;
 		display: inline-block;
-
 		border: {
 			top: solid 2px $board-border-color;
 			bottom: solid 2px $board-border-color;
@@ -292,10 +300,20 @@ export default{
 			}
 			position: relative;
 			@extend .checker-design;
+			&.winner{
+				transform: scale(1.5, 1.5);
+				i{
+					color: white;
+				}
+			}
+
 			&.ownedBy-player-1{
 				animation: scaleBounce .75s linear;
 				&.glow{
 					animation: scaleBounce .75s linear, glow .7s infinite alternate;
+				}
+				&.winner{
+					background: lighten($player-1-color, 15%);
 				}
 			}
 
@@ -307,7 +325,7 @@ export default{
 			}
 
 			&.winner{
-				transform: scale(1.5, 1.5);
+				background: lighten($player-2-color, 15%);
 			}
 		}
 	}

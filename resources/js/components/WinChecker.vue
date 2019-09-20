@@ -1,11 +1,10 @@
 <template>
 	<div>
-		
 	</div>
 </template>
 
 <script>
-	import { mapState } from 'vuex';
+	import { mapState, mapActions } from 'vuex';
 
  	export default{
  		mounted(){
@@ -19,13 +18,22 @@
 				'boardSlots',
 				'numOfRows',
 				'numOfCols',
+				'moves',
 			]),
  		},
 
 		methods: {
+			...mapActions([
+				'updatePlayerCanPlay',
+			]),
+
+			...mapActions('Board', [
+				'updateSpecificSlotProperty',
+			]),
+
 			checkForWin(row, col){
-				// this.checkHorizontal(row, col);
-				// this.checkVertical(row, col);
+				this.checkHorizontal(row, col);
+				this.checkVertical(row, col);
 				this.checkDiagonal(row, col);
 			},
 
@@ -34,9 +42,9 @@
 				let maxCol = Math.min(col + 3, this.numOfCols - 1);
 
 				let slots = [];
-
+				
 				for(var i = minCol; i <= maxCol; i++){
-					slots.push(this.boardSlots[i][row].owner);
+					slots.push({col: i, row: row, owner: this.boardSlots[i][row].owner});
 				}
 
 				this.checkFourInaRow(slots);
@@ -49,58 +57,76 @@
 				let slots = [];
 
 				for(var i = minRow; i <= maxRow; i++){
-					slots.push(this.boardSlots[col][i].owner);
+					slots.push({col: col, row: i, owner: this.boardSlots[col][i].owner});
 				}
 
 				this.checkFourInaRow(slots);
 			},
 
 			checkDiagonal(row, col){
-				let minCol = Math.max(col - 3, 0);
-				let maxCol = Math.min(col + 3, this.numOfCols - 1);
-				let minRow = Math.max(row - 3, 0);
-				let maxRow = Math.min(row + 3, this.numOfRows - 1);
+				let minViableCol, maxViableCol, minViableRow, currentCol, currentRow;
+				let slots = [];
 
-				let currentCol, currentRow;
+				minViableCol = Math.max(col - Math.abs(row - Math.min(row + 3, this.numOfRows - 1)), 0);
+				maxViableCol = Math.min(col + (row - Math.max(row - 3, 0)), this.numOfCols - 1);
+				minViableRow = row + (col - minViableCol);
 
-				// console.log(minCol, maxCol, minRow, maxRow);
 
-				for(var i = col + 1; i <= maxCol; i++){
-					console.log(i);
+				for(currentCol = minViableCol, currentRow = minViableRow; (currentCol <= maxViableCol); currentCol++, currentRow--){
+					slots.push({col: currentCol, row: currentRow, owner: this.boardSlots[currentCol][currentRow].owner});
 				}
 
-				for(var i = col - 1; i >= minCol; i--){
-					console.log(i);
+				this.checkFourInaRow(slots);
+
+				
+				minViableCol = Math.max(col - Math.abs(row - Math.max(row - 3, 0)), 0);
+				maxViableCol = Math.min(col + Math.abs(row - Math.min(row + 3, this.numOfRows - 1)), this.numOfCols - 1);
+				minViableRow = row - (col - minViableCol);
+
+				slots = [];
+
+				for(currentCol = minViableCol, currentRow = minViableRow; (currentCol <= maxViableCol); currentCol++, currentRow++){
+					slots.push({col: currentCol, row: currentRow, owner: this.boardSlots[currentCol][currentRow].owner});
 				}
 
-				// for(currentCol = minCol, currentRow = minRow; currentCol <= maxCol; currentCol++, currentRow++){
-				// 	if(currentCol != col){ //because it's diagonal, self col doesn't count
-
-				// 		console.log(currentCol, currentRow);
-				// 	}
-				// }
+				this.checkFourInaRow(slots);
 			},
 
-			checkFourInaRow(slots){
+			checkFourInaRow(slots){				
 				let counter = 1;
+				let winningSlots = [0];
 
-				for (var i = 0; i <= slots.length - 1; i++) {
+				for (let i = 0; i <= slots.length - 1; i++) {
 					if (typeof slots[i + 1] != 'undefined') {
-						if (slots[i] == slots[i + 1]) {
+						if (slots[i].owner == slots[i + 1].owner) {
 							counter++;
+							winningSlots.push(i + 1);
 						} else {
 							counter = 1;
+							winningSlots = [i + 1];
 						}
 
 						if (counter == 4) {
-							this.alertWinner(slots[i]);
+							for (let i = 0; i <= winningSlots.length - 1; i++) {
+								this.updateSpecificSlotProperty({
+									col: slots[winningSlots[i]].col,
+									row: slots[winningSlots[i]].row,
+									property: 'winner',
+									value: true
+								});
+							}
+
+							this.alertWinner(slots[i].owner);
 							break;
 						}
+					} else {
+						winningSlots.push(i);
 					}
 				}
 			},
 
 			alertWinner(playerNo){
+				this.updatePlayerCanPlay(false);
 				alert('Player ' + playerNo + " won the game!");
 			},
 		}
