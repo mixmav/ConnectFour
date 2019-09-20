@@ -11,6 +11,12 @@
  			this.$root.$on('checkForWin', data => {
         		this.checkForWin(data.row, data.col);
 			});
+
+			this.showAlert({
+				message: "Player won the game!",
+				type: 'alert',
+				secondButtonMessage: '<i class="fa fa-recycle"></i>Reset',
+			});
  		},
 
  		computed: {
@@ -29,6 +35,10 @@
 
 			...mapActions('Board', [
 				'updateSpecificSlotProperty',
+			]),
+
+			...mapActions('Alert', [
+				'showAlert'
 			]),
 
 			checkForWin(row, col){
@@ -127,7 +137,10 @@
 
 			alertWinner(playerNo){
 				this.updatePlayerCanPlay(false);
-				alert('Player ' + playerNo + " won the game!");
+				this.showAlert({
+					message: 'Player ' + playerNo + " won the game!",
+					type: 'alert'
+				});
 			},
 		}
 	}

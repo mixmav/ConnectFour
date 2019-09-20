@@ -182,7 +182,7 @@ export default{
 
 						this.howl.play();
 
-						if (this.numOfMoves > 6) {
+						if (this.numOfMoves >= 6) {
 							this.$root.$emit('checkForWin', {row: i, col: col});
 						}
 
@@ -252,7 +252,7 @@ export default{
 </script>
 
 <style lang="scss">
-@import "../../sass/_variables.scss";
+@import "../../sass/variables";
 
 #board{
 	margin-top: 40px;
@@ -295,6 +295,7 @@ export default{
 			margin-top: 20px;
 			border: solid 2px $body-background;
 			background: white;
+			transition: all .2s;
 			&:first-child{
 				margin-top: 0;
 			}
@@ -308,9 +309,9 @@ export default{
 			}
 
 			&.ownedBy-player-1{
-				animation: scaleBounce .75s linear;
+				animation: scaleBounce .5s linear;
 				&.glow{
-					animation: scaleBounce .75s linear, glow .7s infinite alternate;
+					animation: scaleBounce .5s linear, glow .7s infinite alternate;
 				}
 				&.winner{
 					background: lighten($player-1-color, 15%);
@@ -318,9 +319,9 @@ export default{
 			}
 
 			&.ownedBy-player-2{
-				animation: scaleBounce .75s linear;
+				animation: scaleBounce .5s linear;
 				&.glow{
-					animation: scaleBounce .75s linear, glow .7s infinite alternate;
+					animation: scaleBounce .5s linear, glow .7s infinite alternate;
 				}
 			}
 
@@ -387,16 +388,6 @@ export default{
 				height: 20px;
 			}
 		}
-	}
-}
-
-@keyframes glow {
-	from {
-		box-shadow: 0 0 10px -10px white;
-	}
-	
-	to {
-		box-shadow: 0 0 10px 10px white;
 	}
 }
 
