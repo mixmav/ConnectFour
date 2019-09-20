@@ -19,9 +19,15 @@ import { Howl } from 'howler';
 
 export default {
 	mounted(){
-		this.howl = new Howl({
-			src: ['/sounds/player-move.mp3'],
+		this.howl[0] = new Howl({
+			src: ['/sounds/bring_it_on.mp3'],
 		});
+
+		this.howl[1] = new Howl({
+			src: ['/sounds/undo_redo.wav'],
+		});
+
+		this.howl[0].play();
 	},
 
 	computed: {
@@ -48,7 +54,7 @@ export default {
 
 	data() {
 		return {
-			howl: {},
+			howl: [],
 		}
 	},
 
@@ -102,7 +108,7 @@ export default {
 				this.setMovesArray([]);
 				this.setUndoneMovesArray([]);
 				this.updatePlayerCanPlay(true);
-				this.howl.play();
+				this.howl[0].play();
 			}
 		},
 
@@ -123,6 +129,7 @@ export default {
 			});
 
 			this.popMovesArray();
+			this.howl[1].play();
 		},
 
 		redoLastMove(){
@@ -141,6 +148,7 @@ export default {
 
 			this.popUndoneMovesArray();
 			this.swapToNextPlayer();
+			this.howl[1].play();
 		}
 	}
 }

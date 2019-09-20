@@ -1,13 +1,15 @@
-<template>
-	<div>
-	</div>
-</template>
+<template></template>
 
 <script>
 	import { mapState, mapActions } from 'vuex';
+	import { Howl } from 'howler';
 
  	export default{
  		mounted(){
+ 			this.howl = new Howl({
+				src: ['/sounds/win.wav'],
+			});
+
  			this.$root.$on('checkForWin', data => {
         		this.checkForWin(data.row, data.col);
 			});
@@ -21,7 +23,11 @@
 				'moves',
 			]),
  		},
-
+		data() {
+			return {
+				howl: {},
+			}
+		},
 		methods: {
 			...mapActions([
 				'updatePlayerCanPlay',
@@ -130,6 +136,7 @@
 			},
 
 			alertWinner(playerNo){
+				this.howl.play();
 				this.updatePlayerCanPlay(false);
 				this.showAlert('Player ' + playerNo + " won the game!");
 			},

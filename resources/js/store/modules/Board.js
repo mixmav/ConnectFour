@@ -9,8 +9,6 @@ export const Board = {
 		boardSlots: [],
 		moves: [],
 		undoneMoves: [],
-		playerOneIcon: 'fa-biohazard',
-		playerTwoIcon: 'fa-crosshairs',
 	},
 
 	mutations: {

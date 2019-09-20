@@ -2,13 +2,13 @@
 	<div class="scoreboard">
 		<div class="player-one" :class="{'now-playing': (currentPlayer == 1)}">
 			<div class="inline">
-				<div class="checker player-1"><i :class="'fa ' + playerOneIcon"></i></div>
+				<div class="checker player-1"></div>
 			</div>
 			<p class="score">1</p>
 		</div><!--
 	 --><div class="player-two" :class="{'now-playing': (currentPlayer == 2)}">
 	 		<div class="inline">
-	 			<div class="checker player-2"><i :class="'fa ' + playerTwoIcon"></i></div>
+	 			<div class="checker player-2"></div>
 	 		</div>
 	 		<p class="score">3</p>
 		</div>
@@ -22,11 +22,6 @@
 		computed: {
 			...mapState([
 				'currentPlayer',
-			]),
-
-			...mapState('Board', [
-				'playerOneIcon',
-				'playerTwoIcon'
 			]),
 		}
 	}
@@ -65,8 +60,8 @@
 
 			&.now-playing{
 				background: $primary-color;
-				.checker{
-					animation: rotateFull 2s linear infinite;
+				.score{
+					color: white;	
 				}
 			}
 		}
@@ -95,7 +90,20 @@
 			border: solid 2px white;
 			position: relative;
 			transition: all .2s;
-			@extend .checker-design;
+			width: 30px;
+			height: 30px;
+			border-radius: 100%;
+			transition: all .2s;
+
+			&.player-1{
+				border-color: darken($player-1-color, 10%);
+				background: $player-1-color;
+			}
+
+			&.player-2{
+				border-color: darken($player-2-color, 20%);
+				background: $player-2-color;
+			}
 		}
 	}
 

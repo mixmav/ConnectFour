@@ -16,8 +16,7 @@
 								}
 							]"
 				>
-					<i :class="'fa ' + playerOneIcon" v-show="boardSlot.owner == 1"></i>
-					<i :class="'fa ' + playerTwoIcon" v-show="boardSlot.owner == 2"></i>
+					<i class="fa fa-khanda" v-if="boardSlot.winner"></i>
 				</div>
 		</div>
 	</div>
@@ -117,8 +116,6 @@ export default{
 			'moves',
 			'numOfRows',
 			'numOfCols',
-			'playerOneIcon',
-			'playerTwoIcon',
 		]),
 
 		numOfMoves(){
@@ -300,21 +297,37 @@ export default{
 				margin-top: 0;
 			}
 			position: relative;
-			@extend .checker-design;
+			width: 30px;
+			height: 30px;
+			border-radius: 100%;
+			transition: all .2s;
+
+			&.ownedBy-player-1{
+				border-color: darken($player-1-color, 10%);
+				background: $player-1-color;
+			}
+
+			&.ownedBy-player-2{
+				border-color: darken($player-2-color, 20%);
+				background: $player-2-color;
+			}
+
+			i{
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				color: white;
+				transform: translate(-50%, -50%);
+			}
+
 			&.winner{
 				transform: scale(1.2, 1.2);
-				i{
-					color: white;
-				}
 			}
 
 			&.ownedBy-player-1{
 				animation: scaleBounce .5s linear;
 				&.glow{
 					animation: scaleBounce .5s linear, glow .7s infinite alternate;
-				}
-				&.winner{
-					background: lighten($player-1-color, 15%);
 				}
 			}
 
@@ -323,10 +336,6 @@ export default{
 				&.glow{
 					animation: scaleBounce .5s linear, glow .7s infinite alternate;
 				}
-			}
-
-			&.winner{
-				background: lighten($player-2-color, 15%);
 			}
 		}
 	}
