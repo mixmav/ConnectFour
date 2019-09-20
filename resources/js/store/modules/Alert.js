@@ -3,8 +3,6 @@ export const Alert = {
 	
     state: {
         visible: false,
-        type: 'alert',
-        secondButtonMessage: null,
         message: null,
 	},
 
@@ -16,14 +14,6 @@ export const Alert = {
         updateMessage(state, value){
             state.message = value;
         },
-
-        updateType(state, value){
-            state.type = value;
-        },
-
-        updateSecondButtonMessage(state, value){
-            state.secondButtonMessage = value;
-        }
 	},
 
 	actions: {
@@ -32,10 +22,7 @@ export const Alert = {
         },
 
 		showAlert(context, value){
-            context.commit('updateType', value.type);
-            context.commit('updateSecondButtonMessage', value.secondButtonMessage);
-            context.commit('updateMessage', value.message);
-
+            context.commit('updateMessage', value);
             context.dispatch('updateVisible', true);
 		},
 	}

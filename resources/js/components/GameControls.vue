@@ -71,37 +71,39 @@ export default {
 		]),
 
 		resetBoard(){
-			for (var i = this.boardSlots.length - 1; i >= 0; i--) {
-				for (var j = this.boardSlots[i].length - 1; j >= 0; j--) {
-					this.updateSpecificSlotProperty({
-						col: i,
-						row: j,
-						property: 'owner',
-						value: 0
-					});
+			if (confirm("Are you sure you want to reset the board?")) {
+				for (var i = this.boardSlots.length - 1; i >= 0; i--) {
+					for (var j = this.boardSlots[i].length - 1; j >= 0; j--) {
+						this.updateSpecificSlotProperty({
+							col: i,
+							row: j,
+							property: 'owner',
+							value: 0
+						});
 
-					this.updateSpecificSlotProperty({
-						col: i,
-						row: j,
-						property: 'hover',
-						value: false
-					});
+						this.updateSpecificSlotProperty({
+							col: i,
+							row: j,
+							property: 'hover',
+							value: false
+						});
 
-					this.updateSpecificSlotProperty({
-						col: i,
-						row: j,
-						property: 'winner',
-						value: false
-					});
+						this.updateSpecificSlotProperty({
+							col: i,
+							row: j,
+							property: 'winner',
+							value: false
+						});
+					}
 				}
+				if (this.currentPlayer == 2) {
+					this.swapToNextPlayer();
+				}
+				this.setMovesArray([]);
+				this.setUndoneMovesArray([]);
+				this.updatePlayerCanPlay(true);
+				this.howl.play();
 			}
-			if (this.currentPlayer == 2) {
-				this.swapToNextPlayer();
-			}
-			this.setMovesArray([]);
-			this.setUndoneMovesArray([]);
-			this.updatePlayerCanPlay(true);
-			this.howl.play();
 		},
 
 		undoLastMove(){

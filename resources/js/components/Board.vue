@@ -295,14 +295,14 @@ export default{
 			margin-top: 20px;
 			border: solid 2px $body-background;
 			background: white;
-			transition: all .2s;
+			transition: all .3s;
 			&:first-child{
 				margin-top: 0;
 			}
 			position: relative;
 			@extend .checker-design;
 			&.winner{
-				transform: scale(1.5, 1.5);
+				transform: scale(1.2, 1.2);
 				i{
 					color: white;
 				}

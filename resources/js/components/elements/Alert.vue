@@ -5,13 +5,8 @@
 				<p v-html="message"></p>
 			</div>
 			
-			<div class="fixed-bottom alert" v-if="type == 'alert'">
-				<button class="btn h-ripple blue" @click="toggleVisible(false)"><i class="fa fa-keyboard"></i>Press ESC to clsoe</button>
-			</div>
-
-			<div class="fixed-bottom confirm" v-if="type == 'confirm'">
-				<button class="btn h-ripple blue" @click="toggleVisible(false)"><i class="fa fa-thumbs-down"></i>Cancel</button>
-				<button class="btn h-ripple red" @click="toggleVisible(false)" v-html="secondButtonMessage"></button>
+			<div class="fixed-bottom">
+				<button class="btn h-ripple blue" @click="toggleVisible(false)"><i class="fa fa-keyboard"></i>Press any key to clsoe</button>
 			</div>
 		</div>
 	</div>
@@ -25,7 +20,7 @@
 		created(){
 			$(window).on({
 				keydown: (event) => {
-					if (event.keyCode == 27 && this.visible) {
+					if (this.visible) {
 						this.toggleVisible(false);
 					}
 				},
@@ -45,8 +40,6 @@
 			...mapState('Alert', [
 				'visible',
 				'message',
-				'type',
-				'secondButtonMessage'
 			]),
 		},
 
@@ -83,7 +76,6 @@
 			min-height: 220px;
 			max-height: 350px;
 			overflow: auto;
-			background: white;
 			background:
 				radial-gradient(rgba($purple, 0.2) 1%, transparent 15%) 0 0,
 				radial-gradient(rgba($green, 0.2) 1%, transparent 15%) 16px 16px,
@@ -145,17 +137,6 @@
 					padding: {
 						top: 1em;
 						bottom: 1em;
-					}
-				}
-				
-				&.confirm{
-					display: flex;
-					justify-content: space-between;
-					button{
-						width: calc(50% - 5px);
-						&:second-child{
-							margin-left: 5px;
-						}
 					}
 				}
 			}

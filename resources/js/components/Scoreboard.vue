@@ -3,14 +3,12 @@
 		<div class="player-one" :class="{'now-playing': (currentPlayer == 1)}">
 			<div class="inline">
 				<div class="checker player-1"><i :class="'fa ' + playerOneIcon"></i></div>
-				<p>Player 1</p>
 			</div>
 			<p class="score">1</p>
 		</div><!--
 	 --><div class="player-two" :class="{'now-playing': (currentPlayer == 2)}">
 	 		<div class="inline">
 	 			<div class="checker player-2"><i :class="'fa ' + playerTwoIcon"></i></div>
-				<p>Player 2</p>
 	 		</div>
 	 		<p class="score">3</p>
 		</div>
@@ -36,7 +34,6 @@
 
 <style lang="scss">
 	@import "../../sass/variables";
-
 	.scoreboard{
 		margin-top: 20px;
 		position: fixed;
@@ -53,13 +50,10 @@
 				top: solid 1px $black;
 			}
 			width: 50%;
-			background: white;
+			background: #fff;
 			color: $black;
 			display: inline-block;
-			transition: all .2s;
-			p{
-				color: inherit;
-			}
+			transition: all .3s;
 			.score{
 				position: absolute;
 				top: 50%;
@@ -72,17 +66,19 @@
 			&.now-playing{
 				background: $primary-color;
 				.checker{
-					animation: scaleRotate 1s cubic-bezier(0.39, 0.62, 0.57, 1) infinite;
-				}
-				p{
-					color: white;
+					animation: rotateFull 2s linear infinite;
 				}
 			}
 		}
+
 		.player-one{
 			padding-left: 20px;
 			.score{
 				right: 35px;
+			}
+
+			&.now-playing{
+				background: $primary-color;
 			}
 		}
 		.player-two{
@@ -98,6 +94,7 @@
 			display: inline-block;
 			border: solid 2px white;
 			position: relative;
+			transition: all .2s;
 			@extend .checker-design;
 		}
 	}
