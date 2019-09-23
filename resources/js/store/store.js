@@ -3,7 +3,8 @@ import Vuex from 'vuex';
 
 Vue.use(Vuex);
 
-import { Board } from './modules/Board'; 
+import { Board } from './modules/Board';
+import { Scoreboard } from './modules/Scoreboard';
 import { Alert } from './modules/Alert';
 
 export const store = new Vuex.Store({
@@ -11,6 +12,7 @@ export const store = new Vuex.Store({
 
 	modules: {
 		Board: Board,
+		Scoreboard: Scoreboard,
 		Alert: Alert,
 	},
 

@@ -4,13 +4,13 @@
 			<div class="inline">
 				<div class="checker player-1"></div>
 			</div>
-			<p class="score">1</p>
+			<p class="score">{{ score.player1 }}</p>
 		</div><!--
 	 --><div class="player-two" :class="{'now-playing': (currentPlayer == 2)}">
 	 		<div class="inline">
 	 			<div class="checker player-2"></div>
 	 		</div>
-	 		<p class="score">3</p>
+	 		<p class="score">{{ score.player2 }}</p>
 		</div>
 	</div>
 </template>
@@ -23,7 +23,11 @@
 			...mapState([
 				'currentPlayer',
 			]),
-		}
+
+			...mapState('Scoreboard', [
+				'score',
+			])
+		},
 	}
 </script>
 

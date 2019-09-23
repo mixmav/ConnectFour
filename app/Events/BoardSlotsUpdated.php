@@ -16,6 +16,8 @@ class BoardSlotsUpdated implements ShouldBroadcast
 
     public $boardSlots;
     public $currentPlayer;
+    public $moves;
+    public $undoneMoves;
 
     /**
      * Create a new event instance.
@@ -26,6 +28,8 @@ class BoardSlotsUpdated implements ShouldBroadcast
     {
         $this->boardSlots = $payload['boardSlots'];
         $this->currentPlayer = $payload['currentPlayer'];
+        $this->moves = $payload['moves'];
+        $this->undoneMoves = $payload['undoneMoves'];
     }
 
     /**

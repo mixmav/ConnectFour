@@ -16,6 +16,17 @@
 
 import { mapState, mapActions } from 'vuex';
 import { Howl } from 'howler';
+import Echo from "laravel-echo";
+
+window.Pusher = require('pusher-js');		
+window.Echo = new Echo({
+	broadcaster: 'pusher',
+	key: '9e8632ab1dd07025b0cb',
+	cluster: 'ap4',
+	forceTLS: false
+});
+
+var channel = window.Echo.channel('board-channel');
 
 export default {
 	mounted(){
@@ -27,7 +38,61 @@ export default {
 			src: ['/sounds/undo_redo.wav'],
 		});
 
-		this.howl[0].play();
+		this.$root.$on('broadcastMove', () => {
+        	this.broadcastMove();
+		});
+
+		channel.listen('BoardSlotsUpdated', (data) => {
+			if (this.multiplayer) {
+				this.updatePlayerCanPlay(true);
+				if (this.currentPlayer != parseInt(data.currentPlayer)) {
+					for (var i = this.boardSlots.length - 1; i >= 0; i--) {
+						for (var j = this.boardSlots[i].length - 1; j >= 0; j--) {
+							var owner = parseInt(data.boardSlots[i][j].owner);
+							this.updateSpecificSlotProperty({
+								col: i,
+								row: j,
+								property: 'owner',
+								value: owner
+							});
+							this.updateSpecificSlotProperty({
+								col: i,
+								row: j,
+								property: 'hover',
+								value: false
+							});
+							this.updateSpecificSlotProperty({
+								col: i,
+								row: j,
+								property: 'winner',
+								value: false
+							});
+						}
+					}
+
+					if (data.moves) {
+						this.setMovesArray(data.moves);
+					} else {
+						this.setMovesArray([]);
+					}
+
+					if (data.undoneMoves) {
+						this.setUndoneMovesArray(data.undoneMoves);
+					} else {
+						this.setUndoneMovesArray([]);
+					}
+
+					this.swapToNextPlayer();
+					
+					{
+						let row = this.moves[this.moves.length - 1].row;
+						let col = this.moves[this.moves.length - 1].col;
+						// this.$root.$emit('checkForWin', {row: row, col: col});
+					}
+
+				}
+			}
+		});
 	},
 
 	computed: {
@@ -76,8 +141,38 @@ export default {
 			'setUndoneMovesArray',
 		]),
 
-		resetBoard(){
-			if (confirm("Are you sure you want to reset the board?")) {
+		broadcastMove(){
+			if (this.multiplayer) {
+				let vThis = this;
+				
+				$.ajax({
+					method: 'POST',
+					url: '/broadcast/board-slots',
+
+					beforeSend(){
+						vThis.updatePlayerCanPlay(false);
+					},
+
+					data: {
+						boardSlots: vThis.boardSlots,
+						currentPlayer: vThis.currentPlayer,
+						moves: vThis.moves,
+						undoneMoves: vThis.undoneMoves,
+					},
+				});
+			}
+		},
+
+		resetBoard(shouldConfirm = true){
+			let confirmCheck = true;
+
+			if (shouldConfirm) {
+				confirmCheck = confirm("Are you sure you want to reset the board?");
+			} else {
+				confirmCheck = true;
+			}
+
+			if (confirmCheck) {
 				for (var i = this.boardSlots.length - 1; i >= 0; i--) {
 					for (var j = this.boardSlots[i].length - 1; j >= 0; j--) {
 						this.updateSpecificSlotProperty({
@@ -109,6 +204,7 @@ export default {
 				this.setUndoneMovesArray([]);
 				this.updatePlayerCanPlay(true);
 				this.howl[0].play();
+				this.broadcastMove();
 			}
 		},
 
@@ -130,6 +226,7 @@ export default {
 
 			this.popMovesArray();
 			this.howl[1].play();
+			this.broadcastMove();
 		},
 
 		redoLastMove(){
@@ -148,7 +245,9 @@ export default {
 
 			this.popUndoneMovesArray();
 			this.swapToNextPlayer();
+			this.updatePlayerCanPlay(true);
 			this.howl[1].play();
+			this.broadcastMove();
 		}
 	}
 }

@@ -22,6 +22,10 @@
 				'numOfCols',
 				'moves',
 			]),
+
+			...mapState('Scoreboard', [
+				'score'
+			]),
  		},
 		data() {
 			return {
@@ -31,6 +35,7 @@
 		methods: {
 			...mapActions([
 				'updatePlayerCanPlay',
+				'swapToNextPlayer',
 			]),
 
 			...mapActions('Board', [
@@ -41,10 +46,20 @@
 				'showAlert'
 			]),
 
+			...mapActions('Scoreboard', [
+				'updateScore'
+			]),
+
 			checkForWin(row, col){
-				this.checkHorizontal(row, col);
-				this.checkVertical(row, col);
-				this.checkDiagonal(row, col);
+				if (this.moves.length > 6) {
+					this.checkHorizontal(row, col);
+					this.checkVertical(row, col);
+					this.checkDiagonal(row, col);
+				}
+
+				if (this.moves.length == 42) {
+					this.alertDraw();
+				}
 			},
 
 			checkHorizontal(row, col){
@@ -138,8 +153,16 @@
 			alertWinner(playerNo){
 				this.howl.play();
 				this.updatePlayerCanPlay(false);
-				this.showAlert('Player ' + playerNo + " won the game!");
+				this.showAlert('Player ' + playerNo + " won the game.");
+				this.updateScore({
+					player: playerNo,
+					value: this.score['player' + playerNo] + 1
+				})
 			},
+
+			alertDraw(){
+				this.showAlert("Looks like a draw.");
+			}
 		}
 	}
 </script>

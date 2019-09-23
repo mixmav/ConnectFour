@@ -16,7 +16,7 @@
 								}
 							]"
 				>
-					<i class="fa fa-khanda" v-if="boardSlot.winner"></i>
+					<i class="fa fa-crown" v-if="boardSlot.winner"></i>
 				</div>
 		</div>
 	</div>
@@ -25,17 +25,17 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 import { Howl } from 'howler';
-import Echo from "laravel-echo";
+// import Echo from "laravel-echo";
 
-window.Pusher = require('pusher-js');		
-window.Echo = new Echo({
-	broadcaster: 'pusher',
-	key: '9e8632ab1dd07025b0cb',
-	cluster: 'ap4',
-	forceTLS: false
-});
+// window.Pusher = require('pusher-js');		
+// window.Echo = new Echo({
+// 	broadcaster: 'pusher',
+// 	key: '9e8632ab1dd07025b0cb',
+// 	cluster: 'ap4',
+// 	forceTLS: false
+// });
 
-var channel = window.Echo.channel('board-channel');
+// var channel = window.Echo.channel('board-channel');
 
 export default{
 	mounted(){
@@ -77,26 +77,26 @@ export default{
 			}
 		}
 
-		channel.listen('BoardSlotsUpdated', (data) => {
-			for (var i = this.boardSlots.length - 1; i >= 0; i--) {
-				for (var j = this.boardSlots[i].length - 1; j >= 0; j--) {
-					var owner = parseInt(data.boardSlots[i][j].owner);
-					if (this.multiplayer) {
-						this.updateSpecificSlotProperty({
-							col: i,
-							row: j,
-							property: 'owner',
-							value: owner
-						});
-					}
-				}
-			}
+		// channel.listen('BoardSlotsUpdated', (data) => {
+		// 	for (var i = this.boardSlots.length - 1; i >= 0; i--) {
+		// 		for (var j = this.boardSlots[i].length - 1; j >= 0; j--) {
+		// 			var owner = parseInt(data.boardSlots[i][j].owner);
+		// 			if (this.multiplayer) {
+		// 				this.updateSpecificSlotProperty({
+		// 					col: i,
+		// 					row: j,
+		// 					property: 'owner',
+		// 					value: owner
+		// 				});
+		// 			}
+		// 		}
+		// 	}
 
-			if (this.currentPlayer != parseInt(data.currentPlayer) && this.multiplayer) {
-				this.swapToNextPlayer();
-			}
+		// 	if (this.currentPlayer != parseInt(data.currentPlayer) && this.multiplayer) {
+		// 		this.swapToNextPlayer();
+		// 	}
 
-		});
+		// });
 	},
 
 	data(){
@@ -117,10 +117,6 @@ export default{
 			'numOfRows',
 			'numOfCols',
 		]),
-
-		numOfMoves(){
-			return this.moves.length;
-		}
 	},
 
 	methods: {
@@ -169,19 +165,12 @@ export default{
 							property: 'owner',
 							value: this.currentPlayer
 						});
-
 						this.updateSpecificSlotProperty({
 							col: col,
 							row: i,
 							property: 'hover',
 							value: false
 						});
-
-						this.howl.play();
-
-						if (this.numOfMoves >= 6) {
-							this.$root.$emit('checkForWin', {row: i, col: col});
-						}
 
 						this.swapToNextPlayer();
 						this.pushToMovesArray({
@@ -190,29 +179,31 @@ export default{
 							owner: this.currentPlayer,
 						});
 
-
 						this.setUndoneMovesArray([]);
+						this.howl.play();
+						this.$root.$emit('broadcastMove');
+						this.$root.$emit('checkForWin', {row: i, col: col});
 						break;
 					}
 				}
 
-				if (this.multiplayer) {
-					this.broadcastMove();				
-				}
+				// if (this.multiplayer) {
+				// 	this.broadcastMove();				
+				// }
 			}
 		},
 
-		broadcastMove(){
-			var vThis = this;
-			$.ajax({
-				method: 'POST',
-				url: '/broadcast/board-slots',
-				data: {
-					boardSlots: vThis.boardSlots,
-					currentPlayer: vThis.currentPlayer
-				},
-			});
-		},
+		// broadcastMove(){
+		// 	var vThis = this;
+		// 	$.ajax({
+		// 		method: 'POST',
+		// 		url: '/broadcast/board-slots',
+		// 		data: {
+		// 			boardSlots: vThis.boardSlots,
+		// 			currentPlayer: vThis.currentPlayer
+		// 		},
+		// 	});
+		// },
 
 		addHoverClass(col){
 			if (!this.colIsFull(col) && this.playerCanPlay) {
@@ -317,6 +308,7 @@ export default{
 				top: 50%;
 				left: 50%;
 				color: white;
+				font-size: .8em;
 				transform: translate(-50%, -50%);
 			}
 
