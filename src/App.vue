@@ -1,5 +1,4 @@
 <template>
-	<component :is="'style'">{{ css }}</component>
 	<div class="menu-back-container">
 		<a href="https://mixmav.me" class="a"><i class="fa fa-chevron-left" style="font-size: .8em"></i>mixmav.me</a>
 	</div>
@@ -11,7 +10,6 @@
 </template>
 
 <script>
-import css from "./sass/app.scss?inline";
 
 import Alert from './components/elements/Alert.vue';
 import Board from './components/Board.vue';
@@ -28,12 +26,6 @@ export default {
 		WinChecker,
 		GameControls,
 		ScoreBoard,
-	},
-
-	data() {
-		return {
-			css: css,
-		}
 	},
 
 	mounted() {
