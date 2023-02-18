@@ -1,0 +1,46 @@
+$primary-color: #3F51B5;
+$primary-dark-color: #303F9F;
+$primary-alt-color: white;
+
+$secondary-color: #FFC107;
+
+$black: lighten(#353238, 10%);
+$red: #E34A6F;
+$orange: #FC8C24;
+$yellow: #FDE747;
+$green: #48A64D;
+$blue: #278DED;
+$purple: #9124A4;
+
+$colors: (
+	'red': $red,
+	'orange': $orange,
+	'yellow': $yellow,
+	'green': $green,
+	'blue': $blue,
+	'primary': $primary-color,
+	'purple': $purple,
+	'black': $black,
+);
+
+$primary-color: #F3C969;
+
+
+$body-background: white;
+
+$board-background: #1E2D2F;
+
+
+$board-border-color: darken($board-background, 10%);
+
+$player-1-color: #7BE0AD;
+$player-2-color: #E54B4B;
+
+
+$zIndex-window-alert: 103;
+
+@mixin media($width){
+	@media only screen and (max-width: $width){
+		@content;
+	}
+}

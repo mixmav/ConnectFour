@@ -1,0 +1,23 @@
+@charset "UTF-8";
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500&display=swap');
+
+@import "./variables";
+@import './values';
+
+*{
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: 'Cairo', sans-serif;
+	color: $black;
+}
+
+body{
+	background:
+		radial-gradient(rgba($red, 0.2) 1%, transparent 15%) 0 0,
+		radial-gradient(rgba($primary-color, 0.2) 1%, transparent 15%) 16px 16px,
+		radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 0 1px,
+		radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 16px 17px;
+	background-size: 32px 32px;
+	background-color: $body-background;
+}
