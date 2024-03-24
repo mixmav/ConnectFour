@@ -10,45 +10,29 @@ export default {
             src: [winSound],
         });
 
-        this.emitter.on("checkForWin", data => {
+        this.emitter.on('checkForWin', (data) => {
             this.checkForWin(data.row, data.col);
         });
     },
 
     computed: {
-        ...mapState('Board', [
-            'boardSlots',
-            'numOfRows',
-            'numOfCols',
-            'moves',
-        ]),
+        ...mapState('Board', ['boardSlots', 'numOfRows', 'numOfCols', 'moves']),
 
-        ...mapState('Scoreboard', [
-            'score'
-        ]),
+        ...mapState('Scoreboard', ['score']),
     },
     data() {
         return {
             howl: {},
-        }
+        };
     },
     methods: {
-        ...mapActions([
-            'updatePlayerCanPlay',
-            'swapToNextPlayer',
-        ]),
+        ...mapActions(['updatePlayerCanPlay', 'swapToNextPlayer']),
 
-        ...mapActions('Board', [
-            'updateSpecificSlotProperty',
-        ]),
+        ...mapActions('Board', ['updateSpecificSlotProperty']),
 
-        ...mapActions('Alert', [
-            'showAlert'
-        ]),
+        ...mapActions('Alert', ['showAlert']),
 
-        ...mapActions('Scoreboard', [
-            'updateScore'
-        ]),
+        ...mapActions('Scoreboard', ['updateScore']),
 
         checkForWin(row, col) {
             if (this.moves.length > 6) {
@@ -69,7 +53,11 @@ export default {
             let slots = [];
 
             for (var i = minCol; i <= maxCol; i++) {
-                slots.push({ col: i, row: row, owner: this.boardSlots[i][row].owner });
+                slots.push({
+                    col: i,
+                    row: row,
+                    owner: this.boardSlots[i][row].owner,
+                });
             }
 
             this.checkFourInaRow(slots);
@@ -82,36 +70,70 @@ export default {
             let slots = [];
 
             for (var i = minRow; i <= maxRow; i++) {
-                slots.push({ col: col, row: i, owner: this.boardSlots[col][i].owner });
+                slots.push({
+                    col: col,
+                    row: i,
+                    owner: this.boardSlots[col][i].owner,
+                });
             }
 
             this.checkFourInaRow(slots);
         },
 
         checkDiagonal(row, col) {
-            let minViableCol, maxViableCol, minViableRow, currentCol, currentRow;
+            let minViableCol,
+                maxViableCol,
+                minViableRow,
+                currentCol,
+                currentRow;
             let slots = [];
 
-            minViableCol = Math.max(col - Math.abs(row - Math.min(row + 3, this.numOfRows - 1)), 0);
-            maxViableCol = Math.min(col + (row - Math.max(row - 3, 0)), this.numOfCols - 1);
+            minViableCol = Math.max(
+                col - Math.abs(row - Math.min(row + 3, this.numOfRows - 1)),
+                0
+            );
+            maxViableCol = Math.min(
+                col + (row - Math.max(row - 3, 0)),
+                this.numOfCols - 1
+            );
             minViableRow = row + (col - minViableCol);
 
-
-            for (currentCol = minViableCol, currentRow = minViableRow; (currentCol <= maxViableCol); currentCol++, currentRow--) {
-                slots.push({ col: currentCol, row: currentRow, owner: this.boardSlots[currentCol][currentRow].owner });
+            for (
+                currentCol = minViableCol, currentRow = minViableRow;
+                currentCol <= maxViableCol;
+                currentCol++, currentRow--
+            ) {
+                slots.push({
+                    col: currentCol,
+                    row: currentRow,
+                    owner: this.boardSlots[currentCol][currentRow].owner,
+                });
             }
 
             this.checkFourInaRow(slots);
 
-
-            minViableCol = Math.max(col - Math.abs(row - Math.max(row - 3, 0)), 0);
-            maxViableCol = Math.min(col + Math.abs(row - Math.min(row + 3, this.numOfRows - 1)), this.numOfCols - 1);
+            minViableCol = Math.max(
+                col - Math.abs(row - Math.max(row - 3, 0)),
+                0
+            );
+            maxViableCol = Math.min(
+                col + Math.abs(row - Math.min(row + 3, this.numOfRows - 1)),
+                this.numOfCols - 1
+            );
             minViableRow = row - (col - minViableCol);
 
             slots = [];
 
-            for (currentCol = minViableCol, currentRow = minViableRow; (currentCol <= maxViableCol); currentCol++, currentRow++) {
-                slots.push({ col: currentCol, row: currentRow, owner: this.boardSlots[currentCol][currentRow].owner });
+            for (
+                currentCol = minViableCol, currentRow = minViableRow;
+                currentCol <= maxViableCol;
+                currentCol++, currentRow++
+            ) {
+                slots.push({
+                    col: currentCol,
+                    row: currentRow,
+                    owner: this.boardSlots[currentCol][currentRow].owner,
+                });
             }
 
             this.checkFourInaRow(slots);
@@ -137,7 +159,7 @@ export default {
                                 col: slots[winningSlots[i]].col,
                                 row: slots[winningSlots[i]].row,
                                 property: 'winner',
-                                value: true
+                                value: true,
                             });
                         }
 
@@ -153,16 +175,16 @@ export default {
         alertWinner(playerNo) {
             this.howl.play();
             this.updatePlayerCanPlay(false);
-            this.showAlert('Player ' + playerNo + " won the game.");
+            this.showAlert('Player ' + playerNo + ' won the game.');
             this.updateScore({
                 player: playerNo,
-                value: this.score['player' + playerNo] + 1
-            })
+                value: this.score['player' + playerNo] + 1,
+            });
         },
 
         alertDraw() {
-            this.showAlert("Looks like a draw.");
-        }
-    }
-}
+            this.showAlert('Looks like a draw.');
+        },
+    },
+};
 </script>
