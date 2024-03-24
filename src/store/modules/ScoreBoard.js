@@ -1,4 +1,4 @@
-export const Scoreboard = {
+export const ScoreBoard = {
     namespaced: true,
 
     state: {

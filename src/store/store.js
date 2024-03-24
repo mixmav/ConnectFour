@@ -1,7 +1,7 @@
 import Vuex from 'vuex';
 
 import { Board } from './modules/Board';
-import { Scoreboard } from './modules/Scoreboard';
+import { ScoreBoard } from './modules/ScoreBoard';
 import { Alert } from './modules/Alert';
 
 export const store = new Vuex.Store({
@@ -9,7 +9,7 @@ export const store = new Vuex.Store({
 
     modules: {
         Board: Board,
-        Scoreboard: Scoreboard,
+        ScoreBoard: ScoreBoard,
         Alert: Alert,
     },
 
