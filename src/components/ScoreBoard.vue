@@ -24,7 +24,7 @@ export default {
     computed: {
         ...mapState(['currentPlayer']),
 
-        ...mapState('Scoreboard', ['score']),
+        ...mapState('ScoreBoard', ['score']),
     },
 };
 </script>
