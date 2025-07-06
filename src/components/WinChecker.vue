@@ -18,7 +18,7 @@ export default {
     computed: {
         ...mapState('Board', ['boardSlots', 'numOfRows', 'numOfCols', 'moves']),
 
-        ...mapState('Scoreboard', ['score']),
+        ...mapState('ScoreBoard', ['score']),
     },
     data() {
         return {
@@ -32,7 +32,7 @@ export default {
 
         ...mapActions('Alert', ['showAlert']),
 
-        ...mapActions('Scoreboard', ['updateScore']),
+        ...mapActions('ScoreBoard', ['updateScore']),
 
         checkForWin(row, col) {
             if (this.moves.length > 6) {
